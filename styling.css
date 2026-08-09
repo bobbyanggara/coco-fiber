@@ -220,12 +220,7 @@ h1,h2,h3{font-family:var(--display);color:var(--husk-950);font-weight:600;letter
 .search-trigger:hover,.search-trigger:active{border-color:var(--coir-600);color:#fff;background:var(--coir-600);transform:translateY(-1px);}
 
 @media (max-width:859px){
-  .search-trigger{
-    width:40px;height:40px;
-    background:var(--coir-600);border-color:var(--coir-600);color:#fff;
-    box-shadow:0 4px 12px rgba(181,113,60,0.35);
-  }
-  .search-trigger svg{width:18px;height:18px;}
+  .search-trigger{display:none;}
 }
 
 .mobile-menu{
