@@ -227,19 +227,43 @@ if (contactForm) {
          : (lang === 'en' ? label.dataset.enShow : label.dataset.show);
    }
 
+   function openContent(content) {
+      content.classList.add('is-open');
+      // Measure the natural height, then animate to it.
+      content.style.maxHeight = content.scrollHeight + 'px';
+   }
+
+   function closeContent(content) {
+      content.classList.remove('is-open');
+      // Force a reflow so the browser has the current height to animate from.
+      content.style.maxHeight = content.scrollHeight + 'px';
+      requestAnimationFrame(() => {
+         content.style.maxHeight = '0px';
+      });
+   }
+
    toggles.forEach(toggle => {
       const content = toggle.nextElementSibling;
       if (!content || !content.classList.contains('p-card-collapsible')) return;
 
       toggle.addEventListener('click', () => {
          const willExpand = !content.classList.contains('is-open');
-         content.classList.toggle('is-open', willExpand);
-         content.style.setProperty('display', willExpand ? 'block' : 'none', 'important');
          toggle.setAttribute('aria-expanded', String(willExpand));
          renderLabel(toggle);
 
-         if (!willExpand) {
+         if (willExpand) {
+            openContent(content);
+         } else {
+            closeContent(content);
             toggle.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+         }
+      });
+
+      // Keep an already-open panel correctly sized if the window resizes
+      // (e.g. rotating a phone, or the language switch changing text length).
+      window.addEventListener('resize', () => {
+         if (content.classList.contains('is-open')) {
+            content.style.maxHeight = content.scrollHeight + 'px';
          }
       });
 
@@ -538,6 +562,20 @@ if (contactForm) {
    const resultsBox = document.getElementById('searchResults');
    const closeBtn = document.getElementById('searchClose');
    const hintEl = document.getElementById('searchHint');
+
+   // The top-bar search icon is a desktop-only shortcut (mobile users get the
+   // search entry inside the hamburger menu instead). Beyond hiding it with
+   // CSS, also pull it out of tab order / the accessibility tree on mobile so
+   // it can't be focused or announced while invisible.
+   const mobileNavQuery = window.matchMedia('(max-width:859px)');
+   function syncTriggerAvailability(e) {
+      const isMobile = e.matches;
+      trigger.toggleAttribute('hidden', isMobile);
+      trigger.setAttribute('tabindex', isMobile ? '-1' : '0');
+      trigger.setAttribute('aria-hidden', String(isMobile));
+   }
+   syncTriggerAvailability(mobileNavQuery);
+   mobileNavQuery.addEventListener('change', syncTriggerAvailability);
 
    // On article pages there is no #home / #produk etc. in this document,
    // so search results should link back to index.html with the anchor.
