@@ -98,18 +98,6 @@ h1,h2,h3{font-family:var(--display);color:var(--husk-950);font-weight:600;letter
 }
 .btn-ghost:hover{border-color:#25D366;}
 .btn-ghost:hover::before{transform:scaleX(1);}
-.btn-outline{
-  background:transparent;border-color:var(--frond-700);color:var(--frond-700);
-  position:relative;overflow:hidden;z-index:0;
-  transition:transform 0.2s ease, box-shadow 0.2s ease, color 0.3s ease 0.05s, border-color 0.3s ease;
-}
-.btn-outline::before{
-  content:'';position:absolute;inset:0;background:var(--frond-700);
-  transform:scaleX(0);transform-origin:left center;
-  transition:transform 0.4s cubic-bezier(.65,0,.35,1);z-index:-1;
-}
-.btn-outline:hover{color:#fff;transform:translateY(-2px);}
-.btn-outline:hover::before{transform:scaleX(1);}
 
 /* ---------- Quote CTA ---------- */
 .quote-cta{
