@@ -1009,9 +1009,18 @@ try {
 try {
    const WEB3FORMS_ACCESS_KEY = 'YOUR-WEB3FORMS-ACCESS-KEY-HERE';
 
-   const POPUP_DELAY_MS = 10000;             // show 10s after page load
-   const POPUP_SNOOZE_DAYS = 3;               // if dismissed, don't re-show for N days
-   const STORAGE_KEY = 'kreasiasa_lead_popup'; // stores 'submitted' or a dismiss timestamp
+   const POPUP_DELAY_MS = 10000;               // show 10s after page load
+   const STORAGE_KEY = 'kreasiasa_lead_popup';  // stores 'shown' for this tab/session only
+
+   // Uses sessionStorage (not localStorage) on purpose: it resets every time
+   // a new tab/window is opened, so the popup reappears each new session,
+   // but won't re-show on every scroll/refresh within the same tab.
+   const sessionSafeGet = (key) => {
+      try { return window.sessionStorage.getItem(key); } catch (err) { return null; }
+   };
+   const sessionSafeSet = (key, value) => {
+      try { window.sessionStorage.setItem(key, value); } catch (err) { /* ignore */ }
+   };
 
    const overlay = document.getElementById('leadPopupOverlay');
    const popupCloseBtn = document.getElementById('leadPopupClose');
@@ -1021,15 +1030,7 @@ try {
 
    if (overlay && popupForm) {
 
-      const shouldShowPopup = () => {
-         const saved = safeStorage.get(STORAGE_KEY);
-         if (!saved) return true;
-         if (saved === 'submitted') return false;
-         const dismissedAt = parseInt(saved, 10);
-         if (Number.isNaN(dismissedAt)) return true;
-         const daysSince = (Date.now() - dismissedAt) / (1000 * 60 * 60 * 24);
-         return daysSince >= POPUP_SNOOZE_DAYS;
-      };
+      const shouldShowPopup = () => !sessionSafeGet(STORAGE_KEY);
 
       const openPopup = () => {
          overlay.classList.add('is-open');
@@ -1041,7 +1042,7 @@ try {
          overlay.classList.remove('is-open');
          overlay.setAttribute('aria-hidden', 'true');
          document.body.classList.remove('lead-popup-open');
-         if (remember) safeStorage.set(STORAGE_KEY, String(Date.now()));
+         if (remember) sessionSafeSet(STORAGE_KEY, 'shown');
       };
 
       if (shouldShowPopup()) {
@@ -1052,6 +1053,7 @@ try {
             if (!aiOpen && !searchOpen) openPopup();
          }, POPUP_DELAY_MS);
       }
+
 
       popupCloseBtn.addEventListener('click', () => closePopup(true));
       overlay.addEventListener('click', (e) => {
@@ -1091,7 +1093,7 @@ try {
 
          formState.hidden = true;
          successState.hidden = false;
-         safeStorage.set(STORAGE_KEY, 'submitted');
+         sessionSafeSet(STORAGE_KEY, 'shown');
 
          setTimeout(() => closePopup(false), 3200);
       });
