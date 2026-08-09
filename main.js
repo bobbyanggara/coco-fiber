@@ -79,10 +79,25 @@ try {
       requestAnimationFrame(tick);
    };
 
-   const revealTargets = document.querySelectorAll(
-      '.section-head, .p-card, .cert-chip, .about-text, .about-stats, .a-stat, .art-card, .t-card, .contact-info, .contact-form, .export-strip'
+   // Default upward fade for most content blocks across the page.
+   const upTargets = document.querySelectorAll(
+      '.section-head, .p-card, .about-stats, .a-stat, .art-card, .t-card, ' +
+      '.contact-info, .contact-form, .export-strip, .quote-cta-strip, ' +
+      '.footer-brand, .footer-links, .footer-contact-list'
    );
-   revealTargets.forEach(el => el.classList.add('fade-in'));
+   upTargets.forEach(el => el.classList.add('fade-in'));
+
+   // Directional variants for a livelier, less uniform reveal.
+   const leftTargets = document.querySelectorAll('.about-visual');
+   leftTargets.forEach(el => el.classList.add('fade-in', 'fade-in-left'));
+
+   const rightTargets = document.querySelectorAll('.about-text');
+   rightTargets.forEach(el => el.classList.add('fade-in', 'fade-in-right'));
+
+   const scaleTargets = document.querySelectorAll('.quote-cta');
+   scaleTargets.forEach(el => el.classList.add('fade-in', 'fade-in-scale'));
+
+   const revealTargets = document.querySelectorAll('.fade-in');
 
    const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry, i) => {
@@ -295,83 +310,94 @@ try {
    }
 } catch (err) { /* ignore */ }
 
-// Product 3 (derivative products) is collapsed behind a "view more" toggle.
-(function initProductDetailsToggle() {
-   const toggles = document.querySelectorAll('.p-card-more-toggle');
-   if (!toggles.length) return;
+// Product carousel: left/right arrows scroll the track by one card width,
+// and disable themselves at the start/end of the scroll range.
+(function initProductSlider() {
+   const track = document.getElementById('productTrack');
+   const prevBtn = document.getElementById('productPrev');
+   const nextBtn = document.getElementById('productNext');
+   if (!track || !prevBtn || !nextBtn) return;
 
-   function getLang() {
-      return document.documentElement.lang === 'en' ? 'en' : 'id';
+   function scrollAmount() {
+      const card = track.querySelector('.p-card');
+      if (!card) return track.clientWidth * 0.9;
+      const style = window.getComputedStyle(track);
+      const gap = parseFloat(style.columnGap || style.gap || '0') || 0;
+      return card.getBoundingClientRect().width + gap;
    }
 
-   function renderLabel(toggle) {
-      const label = toggle.querySelector('.p-card-more-label');
-      if (!label) return;
-      const expanded = toggle.getAttribute('aria-expanded') === 'true';
-      const lang = getLang();
-      label.textContent = expanded
-         ? (lang === 'en' ? label.dataset.enHide : label.dataset.hide)
-         : (lang === 'en' ? label.dataset.enShow : label.dataset.show);
+   function updateArrows() {
+      const maxScroll = track.scrollWidth - track.clientWidth - 1;
+      prevBtn.disabled = track.scrollLeft <= 0;
+      nextBtn.disabled = track.scrollLeft >= maxScroll;
    }
 
-   function openContent(content) {
-      content.classList.add('is-open');
-      // Measure the natural height, then animate to it.
-      content.style.maxHeight = content.scrollHeight + 'px';
-   }
-
-   function closeContent(content) {
-      content.classList.remove('is-open');
-      // Force a reflow so the browser has the current height to animate from.
-      content.style.maxHeight = content.scrollHeight + 'px';
-      requestAnimationFrame(() => {
-         content.style.maxHeight = '0px';
-      });
-   }
-
-   toggles.forEach(toggle => {
-      const content = toggle.nextElementSibling;
-      if (!content || !content.classList.contains('p-card-collapsible')) return;
-
-      toggle.addEventListener('click', () => {
-         try {
-            const willExpand = !content.classList.contains('is-open');
-            toggle.setAttribute('aria-expanded', String(willExpand));
-            renderLabel(toggle);
-
-            if (willExpand) {
-               openContent(content);
-            } else {
-               closeContent(content);
-               toggle.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }
-         } catch (err) {
-            // Last-resort fallback: guarantee the panel becomes visible even
-            // if the animated measurement above fails for any reason.
-            const isOpen = content.classList.toggle('is-open');
-            content.style.maxHeight = isOpen ? 'none' : '0px';
-            toggle.setAttribute('aria-expanded', String(isOpen));
-         }
-      });
-
-      // Keep an already-open panel correctly sized if the window resizes
-      // (e.g. rotating a phone, or the language switch changing text length).
-      window.addEventListener('resize', () => {
-         if (content.classList.contains('is-open')) {
-            content.style.maxHeight = content.scrollHeight + 'px';
-         }
-      });
-
-      renderLabel(toggle);
+   prevBtn.addEventListener('click', () => {
+      track.scrollBy({ left: -scrollAmount(), behavior: 'smooth' });
+   });
+   nextBtn.addEventListener('click', () => {
+      track.scrollBy({ left: scrollAmount(), behavior: 'smooth' });
    });
 
-   // Keep labels in sync when language switch is used
-   const langSwitchBtn = document.getElementById('langSwitch');
-   if (langSwitchBtn) {
-      langSwitchBtn.addEventListener('click', () => {
-         setTimeout(() => toggles.forEach(renderLabel), 0);
-      });
+   track.addEventListener('scroll', () => {
+      window.requestAnimationFrame(updateArrows);
+   }, { passive: true });
+   window.addEventListener('resize', updateArrows);
+   updateArrows();
+})();
+
+// Product image lightbox: click (or Enter/Space) a product photo to view it enlarged.
+(function initProductImageLightbox() {
+   const triggers = document.querySelectorAll('.p-card-img');
+   const overlay = document.getElementById('imgLightboxOverlay');
+   const closeBtn = document.getElementById('imgLightboxClose');
+   const lightboxImg = document.getElementById('imgLightboxImg');
+   const caption = document.getElementById('imgLightboxCaption');
+   if (!triggers.length || !overlay || !lightboxImg) return;
+
+   let lastFocused = null;
+
+   function openLightbox(trigger) {
+      const img = trigger.querySelector('img');
+      if (!img) return;
+      lightboxImg.src = img.currentSrc || img.src;
+      lightboxImg.alt = img.alt || '';
+      if (caption) caption.textContent = img.alt || '';
+      lastFocused = trigger;
+
+      overlay.classList.add('is-open');
+      overlay.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('img-lightbox-open');
+      if (closeBtn) closeBtn.focus();
    }
+
+   function closeLightbox() {
+      overlay.classList.remove('is-open');
+      overlay.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('img-lightbox-open');
+      if (lastFocused) lastFocused.focus();
+   }
+
+   triggers.forEach(trigger => {
+      trigger.addEventListener('click', () => openLightbox(trigger));
+      trigger.addEventListener('keydown', (e) => {
+         if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            openLightbox(trigger);
+         }
+      });
+   });
+
+   if (closeBtn) closeBtn.addEventListener('click', closeLightbox);
+
+   // Click on the dark backdrop (but not the image itself) closes the lightbox
+   overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) closeLightbox();
+   });
+
+   document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && overlay.classList.contains('is-open')) closeLightbox();
+   });
 })();
 
 // FAQ accordion (article pages)

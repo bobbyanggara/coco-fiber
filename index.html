@@ -149,12 +149,23 @@
     <h2 data-en="Coconut Fiber Specifications">Spesifikasi Coconut Fiber</h2>
   </div>
 
+  <div class="product-slider">
+    <button type="button" class="slider-arrow slider-prev" id="productPrev" aria-label="Produk sebelumnya" data-en-label="Previous product">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <button type="button" class="slider-arrow slider-next" id="productNext" aria-label="Produk berikutnya" data-en-label="Next product">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
+
   <div class="product-grid" id="productTrack">
 
       <!-- Coco Fiber -->
       <article class="p-card">
-        <div class="p-card-img">
+        <div class="p-card-img" role="button" tabindex="0" aria-label="Perbesar gambar Coco Fiber" data-en-aria="Enlarge Coco Fiber image">
           <img src="images/gallery-coco-fiber.webp" alt="Coco Fiber dalam bal siap ekspor" loading="lazy">
+          <span class="p-card-img-zoom" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/><path d="M11 8v6M8 11h6"/></svg>
+          </span>
         </div>
         <div class="p-card-body">
           <p class="p-card-eyebrow" data-en="Our Products">Produk Kami</p>
@@ -211,8 +222,11 @@
 
       <!-- Cocopeat -->
       <article class="p-card">
-        <div class="p-card-img">
+        <div class="p-card-img" role="button" tabindex="0" aria-label="Perbesar gambar Cocopeat" data-en-aria="Enlarge Cocopeat image">
           <img src="images/gallery-cocopeat.webp" alt="Cocopeat block media tanam" loading="lazy">
+          <span class="p-card-img-zoom" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/><path d="M11 8v6M8 11h6"/></svg>
+          </span>
         </div>
         <div class="p-card-body">
           <p class="p-card-eyebrow" data-en="Our Products">Produk Kami</p>
@@ -269,20 +283,17 @@
 
       <!-- Produk Turunan -->
       <article class="p-card">
-        <div class="p-card-img">
+        <div class="p-card-img" role="button" tabindex="0" aria-label="Perbesar gambar Produk Turunan" data-en-aria="Enlarge Derivative Products image">
           <img src="images/cocomesh.webp" alt="Cocomesh dan produk turunan coco fiber" loading="lazy">
+          <span class="p-card-img-zoom" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/><path d="M11 8v6M8 11h6"/></svg>
+          </span>
         </div>
         <div class="p-card-body">
           <p class="p-card-eyebrow" data-en="Our Products">Produk Kami</p>
           <h3 data-en="Derivative Products">Produk Turunan</h3>
           <p class="p-card-desc" data-en="A range of coconut fiber derivative products for land reclamation, seedling nurseries, and eco-friendly growing media, custom made to buyer specifications.">Rangkaian produk turunan sabut kelapa untuk reklamasi lahan, pembibitan, hingga media tanam ramah lingkungan, dibuat custom sesuai spesifikasi buyer.</p>
 
-          <button type="button" class="p-card-more-toggle" aria-expanded="false" data-show="Lihat Produk Turunan" data-hide="Sembunyikan Detail" data-en-show="View Derivative Products" data-en-hide="Hide Details" style="display:inline-flex;align-items:center;gap:0.45rem;width:auto;">
-            <span class="p-card-more-label" data-show="Lihat Produk Turunan" data-hide="Sembunyikan Detail" data-en-show="View Derivative Products" data-en-hide="Hide Details">Lihat Produk Turunan</span>
-            <svg width="16" height="16" style="width:16px;height:16px;flex-shrink:0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
-          </button>
-
-          <div class="p-card-collapsible">
           <ul class="p-card-features">
             <li><svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20c8-1 13-6 15-15C10 6 5 11 4 20z"/><path d="M8.5 15.5C11 13 13.5 10.5 16 8"/></svg><span data-en="Cocomesh for land reclamation &amp; erosion control">Cocomesh untuk reklamasi lahan &amp; kontrol erosi</span></li>
             <li><svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20c8-1 13-6 15-15C10 6 5 11 4 20z"/><path d="M8.5 15.5C11 13 13.5 10.5 16 8"/></svg><span data-en="Coco pots &amp; coco discs for seedling nurseries">Cocopot &amp; cocodisc untuk pembibitan tanaman</span></li>
@@ -306,18 +317,35 @@
 
           <div class="p-card-details">
             <div class="p-card-table-wrap">
-              <p class="p-card-table-title" data-en="Product Types">Jenis Produk</p>
-              <table class="p-card-table p-card-table-spec">
-                <tr><td>Cocomesh</td><td data-en="Width 1–4m, custom roll length, custom mesh size">Lebar 1–4m, panjang roll &amp; mesh custom</td></tr>
-                <tr><td>Cocopot</td><td data-en="Diameter 5–15cm, fully biodegradable">Diameter 5–15cm, biodegradable</td></tr>
-                <tr><td>Cocodisc</td><td data-en="Diameter 5–10cm, for seedling media">Diameter 5–10cm, untuk media semai</td></tr>
+              <p class="p-card-table-title" data-en="Lead Time">Waktu Pengiriman</p>
+              <table class="p-card-table">
+                <tr><th data-en="Quantity">Jumlah</th><th data-en="Est. Time">Estimasi</th></tr>
+                <tr><td data-en="Sample / trial order">Sampel / Trial Order</td><td data-en="7 days">7 hari</td></tr>
+                <tr><td data-en="Regular order">Order Reguler</td><td data-en="14–21 days">14–21 hari</td></tr>
+                <tr><td data-en="Large / custom order">Order Besar / Custom</td><td data-en="To be negotiated">Nego</td></tr>
               </table>
             </div>
-          </div>
+
+            <div class="p-card-table-wrap">
+              <p class="p-card-table-title" data-en="Specification">Spesifikasi</p>
+              <table class="p-card-table p-card-table-spec">
+                <tr><td data-en="Place of Origin">Asal Produksi</td><td data-en="Sidoarjo, East Java, Indonesia">Sidoarjo, Jawa Timur</td></tr>
+                <tr><td data-en="Material">Material</td><td data-en="100% Natural Coconut Coir Fiber">100% Serat Sabut Kelapa Alami</td></tr>
+                <tr><td data-en="Color">Warna</td><td data-en="Natural Brown">Coklat Alami</td></tr>
+                <tr><td data-en="Cocomesh Size">Ukuran Cocomesh</td><td data-en="Width 1–4m, custom roll length, mesh 2×2–5×5cm">Lebar 1–4m, panjang roll custom, mesh 2×2–5×5cm</td></tr>
+                <tr><td data-en="Cocopot Size">Ukuran Cocopot</td><td data-en="Diameter 5–15cm, custom height">Diameter 5–15cm, tinggi custom</td></tr>
+                <tr><td data-en="Cocodisc Size">Ukuran Cocodisc</td><td data-en="Diameter 5–10cm, thickness 1–2cm">Diameter 5–10cm, tebal 1–2cm</td></tr>
+                <tr><td data-en="Biodegradation Period">Daya Urai</td><td data-en="2–5 years, depending on thickness &amp; soil conditions">2–5 tahun, tergantung ketebalan &amp; kondisi tanah</td></tr>
+                <tr><td data-en="Packaging">Kemasan</td><td data-en="Roll (Cocomesh) / Carton box (Cocopot, Cocodisc)">Roll (Cocomesh) / Karton (Cocopot, Cocodisc)</td></tr>
+                <tr><td data-en="Minimum Order">Minimum Order</td><td data-en="To be negotiated per product type &amp; size">Nego per jenis produk &amp; ukuran</td></tr>
+              </table>
+            </div>
           </div>
         </div>
       </article>
 
+
+  </div>
   </div>
 
   <div class="export-strip">
@@ -612,6 +640,17 @@
       <p class="lead-popup-privacy" data-en="No spam. We respect your privacy.">Tanpa spam. Privasi Anda terjaga.</p>
     </div>
   </div>
+</div>
+
+<!-- Product Image Lightbox -->
+<div class="img-lightbox-overlay" id="imgLightboxOverlay" aria-hidden="true">
+  <button type="button" class="img-lightbox-close" id="imgLightboxClose" aria-label="Tutup" data-en-aria="Close">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+  </button>
+  <figure class="img-lightbox" role="dialog" aria-modal="true" aria-label="Pratinjau gambar produk">
+    <img src="" alt="" id="imgLightboxImg">
+    <figcaption class="img-lightbox-caption" id="imgLightboxCaption"></figcaption>
+  </figure>
 </div>
 
 <script src="main.js"></script>
