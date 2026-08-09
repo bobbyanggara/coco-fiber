@@ -846,15 +846,23 @@ h1,h2,h3{font-family:var(--display);color:var(--husk-950);font-weight:600;letter
   padding:1.5rem;display:flex;flex-direction:column;gap:0.85rem;
   box-shadow:var(--shadow-sm);
 }
-.contact-form input,.contact-form textarea{
+.contact-form input,.contact-form textarea,.contact-form select{
   width:100%;padding:0.85rem 0.95rem;border:1px solid var(--line);border-radius:10px;
   font-family:var(--sans);font-size:0.93rem;background:var(--kraft-100);color:var(--ink);
   resize:vertical;
   transition:border-color 0.2s ease;
 }
-.contact-form input:focus,.contact-form textarea:focus{outline:2px solid var(--coir-600);outline-offset:1px;border-color:var(--coir-600);}
+.contact-form input:focus,.contact-form textarea:focus,.contact-form select:focus{outline:2px solid var(--coir-600);outline-offset:1px;border-color:var(--coir-600);}
+.contact-form select{
+  appearance:none;-webkit-appearance:none;-moz-appearance:none;cursor:pointer;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23B5713C' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 0.85rem center;background-size:16px;
+  padding-right:2.4rem;
+}
+.contact-form select:invalid{color:var(--ink-soft);}
 .form-row{display:grid;grid-template-columns:1fr;gap:0.85rem;}
 .contact-form .btn{width:100%;}
+.contact-form-note{font-size:0.78rem;color:var(--ink-soft);text-align:center;margin-top:-0.15rem;}
 
 /* ---------- Footer ---------- */
 .footer{

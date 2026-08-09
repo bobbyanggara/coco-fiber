@@ -125,9 +125,9 @@ const safeStorage = {
 let langSwitch = null;
 let currentLang = 'id';
 let submitLabels = {
-   idle: { id: 'Kirim Pesan', en: 'Send Message' },
-   sending: { id: 'Mengirim...', en: 'Sending...' },
-   sent: { id: 'Pesan Terkirim ✓', en: 'Message Sent ✓' }
+   idle: { id: 'Kirim via WhatsApp', en: 'Send via WhatsApp' },
+   sending: { id: 'Membuka WhatsApp...', en: 'Opening WhatsApp...' },
+   sent: { id: 'Terkirim ✓', en: 'Sent ✓' }
 };
 let applyLanguage = function applyLanguage() { /* replaced below if init succeeds */ };
 
@@ -223,16 +223,53 @@ try {
    })();
 } catch (err) { /* ignore */ }
 
-// Contact form submission (demo only, no backend wired up)
+// Contact form submission — builds a WhatsApp message from the form fields
+// and opens it in the WhatsApp API (wa.me) so it's ready to send to our team.
 try {
-   const contactForm = document.querySelector('.contact-form');
+   const contactForm = document.getElementById('contactForm');
+   const WHATSAPP_NUMBER = '6285257930183'; // no "+", no leading zero
+
+   const waMessageTemplates = {
+      id: (name, contact, subject, message) =>
+         `Halo, saya ingin menghubungi CocoFiber.\n\n` +
+         `*Nama:* ${name}\n` +
+         `*Kontak:* ${contact}\n` +
+         `*Subjek:* ${subject}\n` +
+         `*Pesan:*\n${message}`,
+      en: (name, contact, subject, message) =>
+         `Hello, I'd like to get in touch with CocoFiber.\n\n` +
+         `*Name:* ${name}\n` +
+         `*Contact:* ${contact}\n` +
+         `*Subject:* ${subject}\n` +
+         `*Message:*\n${message}`
+   };
+
    if (contactForm) {
       contactForm.addEventListener('submit', (e) => {
          e.preventDefault();
          const btn = contactForm.querySelector('.btn');
 
+         const name = contactForm.querySelector('#cfName').value.trim();
+         const contact = contactForm.querySelector('#cfContact').value.trim();
+         const subjectSelect = contactForm.querySelector('#cfSubject');
+         const subject = subjectSelect.options[subjectSelect.selectedIndex]
+            ? subjectSelect.options[subjectSelect.selectedIndex].text
+            : subjectSelect.value;
+         const message = contactForm.querySelector('#cfMessage').value.trim();
+
+         if (!name || !contact || !subjectSelect.value || !message) {
+            contactForm.reportValidity();
+            return;
+         }
+
+         const buildMessage = waMessageTemplates[currentLang] || waMessageTemplates.id;
+         const waText = buildMessage(name, contact, subject, message);
+         const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(waText)}`;
+
          btn.textContent = submitLabels.sending[currentLang];
          btn.disabled = true;
+
+         window.open(waUrl, '_blank', 'noopener');
 
          setTimeout(() => {
             btn.textContent = submitLabels.sent[currentLang];
@@ -241,7 +278,7 @@ try {
                btn.disabled = false;
                contactForm.reset();
             }, 2200);
-         }, 900);
+         }, 500);
       });
    }
 } catch (err) { /* ignore */ }
