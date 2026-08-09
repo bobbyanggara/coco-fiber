@@ -997,3 +997,103 @@ try {
       }
    });
 })();
+
+// ---------- Lead Capture Popup (auto-opens 10s after page load) ----------
+// Submissions are sent to your email via Web3Forms (a free, backend-less form
+// relay). To activate email delivery:
+//   1. Go to https://web3forms.com, enter the email you want leads sent to,
+//      and click "Create Access Key" — you'll get a key instantly by email.
+//   2. Paste that key into WEB3FORMS_ACCESS_KEY below, replacing the placeholder.
+// Until a real key is set, submissions will still show the success animation
+// but won't actually be delivered anywhere.
+try {
+   const WEB3FORMS_ACCESS_KEY = 'YOUR-WEB3FORMS-ACCESS-KEY-HERE';
+
+   const POPUP_DELAY_MS = 10000;             // show 10s after page load
+   const POPUP_SNOOZE_DAYS = 3;               // if dismissed, don't re-show for N days
+   const STORAGE_KEY = 'kreasiasa_lead_popup'; // stores 'submitted' or a dismiss timestamp
+
+   const overlay = document.getElementById('leadPopupOverlay');
+   const popupCloseBtn = document.getElementById('leadPopupClose');
+   const popupForm = document.getElementById('leadPopupForm');
+   const formState = document.getElementById('leadPopupFormState');
+   const successState = document.getElementById('leadPopupSuccessState');
+
+   if (overlay && popupForm) {
+
+      const shouldShowPopup = () => {
+         const saved = safeStorage.get(STORAGE_KEY);
+         if (!saved) return true;
+         if (saved === 'submitted') return false;
+         const dismissedAt = parseInt(saved, 10);
+         if (Number.isNaN(dismissedAt)) return true;
+         const daysSince = (Date.now() - dismissedAt) / (1000 * 60 * 60 * 24);
+         return daysSince >= POPUP_SNOOZE_DAYS;
+      };
+
+      const openPopup = () => {
+         overlay.classList.add('is-open');
+         overlay.setAttribute('aria-hidden', 'false');
+         document.body.classList.add('lead-popup-open');
+      };
+
+      const closePopup = (remember) => {
+         overlay.classList.remove('is-open');
+         overlay.setAttribute('aria-hidden', 'true');
+         document.body.classList.remove('lead-popup-open');
+         if (remember) safeStorage.set(STORAGE_KEY, String(Date.now()));
+      };
+
+      if (shouldShowPopup()) {
+         setTimeout(() => {
+            // Don't interrupt if the AI chat or search overlay is already open
+            const aiOpen = document.getElementById('aiChatWindow')?.classList.contains('open');
+            const searchOpen = document.body.classList.contains('search-open');
+            if (!aiOpen && !searchOpen) openPopup();
+         }, POPUP_DELAY_MS);
+      }
+
+      popupCloseBtn.addEventListener('click', () => closePopup(true));
+      overlay.addEventListener('click', (e) => {
+         if (e.target === overlay) closePopup(true);
+      });
+      document.addEventListener('keydown', (e) => {
+         if (e.key === 'Escape' && overlay.classList.contains('is-open')) closePopup(true);
+      });
+
+      popupForm.addEventListener('submit', async (e) => {
+         e.preventDefault();
+         const submitBtn = document.getElementById('leadPopupSubmit');
+         const name = document.getElementById('lpName').value.trim();
+         const contact = document.getElementById('lpContact').value.trim();
+         if (!name || !contact) return;
+
+         submitBtn.disabled = true;
+
+         try {
+            if (WEB3FORMS_ACCESS_KEY && WEB3FORMS_ACCESS_KEY !== 'YOUR-WEB3FORMS-ACCESS-KEY-HERE') {
+               await fetch('https://api.web3forms.com/submit', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                     access_key: WEB3FORMS_ACCESS_KEY,
+                     subject: 'Penawaran Gratis — Lead Baru dari Website CocoFiber',
+                     from_name: 'CocoFiber Website',
+                     name: name,
+                     contact: contact,
+                     message: `Nama: ${name}\nKontak (WhatsApp/Email): ${contact}\n\nDikirim otomatis dari popup "Get a Free Price Quote" di cocofiber.com`
+                  })
+               });
+            }
+         } catch (err) {
+            // Fail silently in the UI; the lead simply won't be delivered.
+         }
+
+         formState.hidden = true;
+         successState.hidden = false;
+         safeStorage.set(STORAGE_KEY, 'submitted');
+
+         setTimeout(() => closePopup(false), 3200);
+      });
+   }
+} catch (err) { /* keep the rest of the page working even if this fails */ }
