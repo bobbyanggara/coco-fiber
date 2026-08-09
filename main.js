@@ -223,6 +223,18 @@ try {
    })();
 } catch (err) { /* ignore */ }
 
+// Get Quote CTA -> smooth-scrolls to #kontak (handled above) and then
+// auto-focuses the first contact form field for a more direct "jump to form" feel.
+try {
+   const quoteCtaBtn = document.querySelector('.quote-cta-btn');
+   const cfNameInput = document.getElementById('cfName');
+   if (quoteCtaBtn && cfNameInput) {
+      quoteCtaBtn.addEventListener('click', () => {
+         setTimeout(() => cfNameInput.focus({ preventScroll: true }), 650);
+      });
+   }
+} catch (err) { /* ignore */ }
+
 // Contact form submission — builds a WhatsApp message from the form fields
 // and opens it in the WhatsApp API (wa.me) so it's ready to send to our team.
 try {
