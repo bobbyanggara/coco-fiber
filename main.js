@@ -232,11 +232,13 @@ if (contactForm) {
       if (!content || !content.classList.contains('p-card-collapsible')) return;
 
       toggle.addEventListener('click', () => {
-         const expanded = content.classList.toggle('is-open');
-         toggle.setAttribute('aria-expanded', String(expanded));
+         const willExpand = !content.classList.contains('is-open');
+         content.classList.toggle('is-open', willExpand);
+         content.style.setProperty('display', willExpand ? 'block' : 'none', 'important');
+         toggle.setAttribute('aria-expanded', String(willExpand));
          renderLabel(toggle);
 
-         if (!expanded) {
+         if (!willExpand) {
             toggle.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
          }
       });

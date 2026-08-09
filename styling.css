@@ -469,8 +469,8 @@ h1,h2,h3{font-family:var(--display);color:var(--husk-950);font-weight:600;letter
 .p-card-more-toggle[aria-expanded="true"] svg{transform:rotate(180deg);}
 .p-card-more-label{white-space:nowrap;}
 
-.p-card-collapsible{display:none;}
-.p-card-collapsible.is-open{display:block;animation:detailsFadeIn 0.25s ease;}
+.p-card-collapsible{display:none !important;}
+.p-card-collapsible.is-open{display:block !important;animation:detailsFadeIn 0.25s ease;}
 
 @keyframes detailsFadeIn{
   from{opacity:0;transform:translateY(-4px);}
