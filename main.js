@@ -1,212 +1,250 @@
 // CV Kreasi Asa Indonesia: site scripts
 
 // Mobile menu toggle
-const mobileMenu = document.getElementById('mobileMenu');
-const navLinks = document.getElementById('navLinks');
+try {
+   const mobileMenu = document.getElementById('mobileMenu');
+   const navLinks = document.getElementById('navLinks');
 
-if (mobileMenu && navLinks) {
-   mobileMenu.addEventListener('click', () => {
-      const isOpen = navLinks.classList.toggle('active');
-      mobileMenu.classList.toggle('active', isOpen);
-      mobileMenu.setAttribute('aria-expanded', String(isOpen));
-   });
-
-   // Close mobile menu after tapping a link
-   navLinks.querySelectorAll('a').forEach(link => {
-      link.addEventListener('click', () => {
-         navLinks.classList.remove('active');
-         mobileMenu.classList.remove('active');
-         mobileMenu.setAttribute('aria-expanded', 'false');
+   if (mobileMenu && navLinks) {
+      mobileMenu.addEventListener('click', () => {
+         const isOpen = navLinks.classList.toggle('active');
+         mobileMenu.classList.toggle('active', isOpen);
+         mobileMenu.setAttribute('aria-expanded', String(isOpen));
       });
-   });
-}
+
+      // Close mobile menu after tapping a link
+      navLinks.querySelectorAll('a').forEach(link => {
+         link.addEventListener('click', () => {
+            navLinks.classList.remove('active');
+            mobileMenu.classList.remove('active');
+            mobileMenu.setAttribute('aria-expanded', 'false');
+         });
+      });
+   }
+} catch (err) { /* keep the rest of the page working even if this fails */ }
 
 // Smooth scroll for in-page anchors
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-   anchor.addEventListener('click', function (e) {
-      const target = document.querySelector(this.getAttribute('href'));
-      if (target) {
-         e.preventDefault();
-         target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
+try {
+   document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+         const target = document.querySelector(this.getAttribute('href'));
+         if (target) {
+            e.preventDefault();
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+         }
+      });
    });
-});
+} catch (err) { /* ignore */ }
 
 // Active nav link on scroll
-function updateActiveMenu() {
-   const sections = document.querySelectorAll('section[id]');
-   const links = document.querySelectorAll('.nav-links a');
-   let current = 'home';
+try {
+   var updateActiveMenu = function updateActiveMenu() {
+      const sections = document.querySelectorAll('section[id]');
+      const links = document.querySelectorAll('.nav-links a');
+      let current = 'home';
 
-   sections.forEach(section => {
-      if (window.scrollY >= section.offsetTop - 160) {
-         current = section.getAttribute('id');
-      }
-   });
+      sections.forEach(section => {
+         if (window.scrollY >= section.offsetTop - 160) {
+            current = section.getAttribute('id');
+         }
+      });
 
-   links.forEach(link => {
-      link.classList.toggle('active', link.getAttribute('href') === `#${current}`);
-   });
-}
-window.addEventListener('scroll', updateActiveMenu);
-document.addEventListener('DOMContentLoaded', updateActiveMenu);
+      links.forEach(link => {
+         link.classList.toggle('active', link.getAttribute('href') === `#${current}`);
+      });
+   };
+   window.addEventListener('scroll', updateActiveMenu);
+   document.addEventListener('DOMContentLoaded', updateActiveMenu);
+} catch (err) { /* ignore */ }
 
 // Scroll-triggered fade-ins + counters
-const revealTargets = document.querySelectorAll(
-   '.section-head, .p-card, .cert-chip, .about-text, .about-stats, .a-stat, .art-card, .t-card, .contact-info, .contact-form, .export-strip'
-);
-revealTargets.forEach(el => el.classList.add('fade-in'));
+try {
+   var animateCounter = function animateCounter(el) {
+      if (el.dataset.done) return;
+      el.dataset.done = 'true';
 
-const observer = new IntersectionObserver((entries) => {
-   entries.forEach((entry, i) => {
-      if (entry.isIntersecting) {
-         setTimeout(() => {
-            entry.target.classList.add('animate');
-            const counter = entry.target.querySelector('.counter');
-            if (counter) animateCounter(counter);
-         }, i * 80);
-         observer.unobserve(entry.target);
+      const target = parseInt(el.getAttribute('data-count'), 10);
+      const duration = 900;
+      const start = performance.now();
+
+      function tick(now) {
+         const progress = Math.min((now - start) / duration, 1);
+         el.textContent = Math.floor(progress * target);
+         if (progress < 1) {
+            requestAnimationFrame(tick);
+         } else {
+            el.textContent = target;
+         }
       }
-   });
-}, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+      requestAnimationFrame(tick);
+   };
 
-revealTargets.forEach(el => observer.observe(el));
+   const revealTargets = document.querySelectorAll(
+      '.section-head, .p-card, .cert-chip, .about-text, .about-stats, .a-stat, .art-card, .t-card, .contact-info, .contact-form, .export-strip'
+   );
+   revealTargets.forEach(el => el.classList.add('fade-in'));
 
-function animateCounter(el) {
-   if (el.dataset.done) return;
-   el.dataset.done = 'true';
+   const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+         if (entry.isIntersecting) {
+            setTimeout(() => {
+               entry.target.classList.add('animate');
+               const counter = entry.target.querySelector('.counter');
+               if (counter) animateCounter(counter);
+            }, i * 80);
+            observer.unobserve(entry.target);
+         }
+      });
+   }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
 
-   const target = parseInt(el.getAttribute('data-count'), 10);
-   const duration = 900;
-   const start = performance.now();
-
-   function tick(now) {
-      const progress = Math.min((now - start) / duration, 1);
-      el.textContent = Math.floor(progress * target);
-      if (progress < 1) {
-         requestAnimationFrame(tick);
-      } else {
-         el.textContent = target;
-      }
-   }
-   requestAnimationFrame(tick);
+   revealTargets.forEach(el => observer.observe(el));
+} catch (err) {
+   // If IntersectionObserver or anything above isn't supported, just make
+   // sure content isn't stuck invisible (fade-in starts at opacity:0).
+   document.querySelectorAll('.fade-in').forEach(el => el.classList.add('animate'));
 }
 
-// ---------- Language switch (ID / EN) ----------
-const langSwitch = document.getElementById('langSwitch');
-let currentLang = localStorage.getItem('kreasiasa_lang') || 'id';
 
-const submitLabels = {
+// ---------- Safe localStorage wrapper ----------
+// Some mobile browsers/WebViews (Safari Private Browsing, in-app browsers
+// like WhatsApp/Instagram, strict cookie settings, etc.) throw when
+// localStorage is accessed. An uncaught throw here would silently stop every
+// script below it from running at all — including the product dropdown,
+// FAQ accordion, and search — even though everything works fine on desktop.
+// Wrapping every access keeps the rest of the page functional either way.
+const safeStorage = {
+   get(key) {
+      try { return localStorage.getItem(key); } catch (err) { return null; }
+   },
+   set(key, value) {
+      try { localStorage.setItem(key, value); } catch (err) { /* ignore */ }
+   }
+};
+
+// ---------- Language switch (ID / EN) ----------
+let langSwitch = null;
+let currentLang = 'id';
+let submitLabels = {
    idle: { id: 'Kirim Pesan', en: 'Send Message' },
    sending: { id: 'Mengirim...', en: 'Sending...' },
    sent: { id: 'Pesan Terkirim ✓', en: 'Message Sent ✓' }
 };
+let applyLanguage = function applyLanguage() { /* replaced below if init succeeds */ };
 
-function applyLanguage(lang) {
-   currentLang = lang;
-   document.documentElement.lang = lang;
-   localStorage.setItem('kreasiasa_lang', lang);
+try {
+   langSwitch = document.getElementById('langSwitch');
+   currentLang = safeStorage.get('kreasiasa_lang') || 'id';
+
+   applyLanguage = function applyLanguage(lang) {
+      currentLang = lang;
+      document.documentElement.lang = lang;
+      safeStorage.set('kreasiasa_lang', lang);
+
+      if (langSwitch) {
+         langSwitch.setAttribute('data-lang', lang);
+         const nextLang = lang === 'id' ? 'en' : 'id';
+         const nextLabel = nextLang === 'en' ? 'Switch to English' : 'Ganti ke Bahasa Indonesia';
+         langSwitch.setAttribute('aria-label', nextLabel);
+         langSwitch.setAttribute('title', nextLabel);
+      }
+
+      // Plain text / HTML swap
+      document.querySelectorAll('[data-en]').forEach(el => {
+         if (!el.dataset.idStore) {
+            el.dataset.idStore = el.classList.contains('i18n-html') ? el.innerHTML : el.textContent;
+         }
+         if (el.classList.contains('i18n-html')) {
+            el.innerHTML = lang === 'en' ? el.getAttribute('data-en') : el.dataset.idStore;
+         } else {
+            el.textContent = lang === 'en' ? el.getAttribute('data-en') : el.dataset.idStore;
+         }
+      });
+
+      // Placeholder swap
+      document.querySelectorAll('[data-en-placeholder]').forEach(el => {
+         if (!el.dataset.idPlaceholder) {
+            el.dataset.idPlaceholder = el.getAttribute('placeholder');
+         }
+         el.setAttribute('placeholder', lang === 'en' ? el.getAttribute('data-en-placeholder') : el.dataset.idPlaceholder);
+      });
+
+      // aria-label swap
+      document.querySelectorAll('[data-en-aria]').forEach(el => {
+         if (!el.dataset.idAria) {
+            el.dataset.idAria = el.getAttribute('aria-label') || '';
+         }
+         el.setAttribute('aria-label', lang === 'en' ? el.getAttribute('data-en-aria') : el.dataset.idAria);
+      });
+
+      // title swap
+      document.querySelectorAll('[data-en-title]').forEach(el => {
+         if (!el.dataset.idTitle) {
+            el.dataset.idTitle = el.getAttribute('title') || '';
+         }
+         el.setAttribute('title', lang === 'en' ? el.getAttribute('data-en-title') : el.dataset.idTitle);
+      });
+
+      // Reset submit button label to current idle state in the right language
+      const submitBtn = document.querySelector('.contact-form .btn');
+      if (submitBtn && !submitBtn.disabled) {
+         submitBtn.textContent = submitLabels.idle[lang];
+      }
+   };
 
    if (langSwitch) {
-      langSwitch.setAttribute('data-lang', lang);
-      const nextLang = lang === 'id' ? 'en' : 'id';
-      const nextLabel = nextLang === 'en' ? 'Switch to English' : 'Ganti ke Bahasa Indonesia';
-      langSwitch.setAttribute('aria-label', nextLabel);
-      langSwitch.setAttribute('title', nextLabel);
+      langSwitch.addEventListener('click', () => {
+         const nextLang = langSwitch.getAttribute('data-lang') === 'id' ? 'en' : 'id';
+         applyLanguage(nextLang);
+      });
    }
 
-   // Plain text / HTML swap
-   document.querySelectorAll('[data-en]').forEach(el => {
-      if (!el.dataset.idStore) {
-         el.dataset.idStore = el.classList.contains('i18n-html') ? el.innerHTML : el.textContent;
-      }
-      if (el.classList.contains('i18n-html')) {
-         el.innerHTML = lang === 'en' ? el.getAttribute('data-en') : el.dataset.idStore;
-      } else {
-         el.textContent = lang === 'en' ? el.getAttribute('data-en') : el.dataset.idStore;
-      }
-   });
-
-   // Placeholder swap
-   document.querySelectorAll('[data-en-placeholder]').forEach(el => {
-      if (!el.dataset.idPlaceholder) {
-         el.dataset.idPlaceholder = el.getAttribute('placeholder');
-      }
-      el.setAttribute('placeholder', lang === 'en' ? el.getAttribute('data-en-placeholder') : el.dataset.idPlaceholder);
-   });
-
-   // aria-label swap
-   document.querySelectorAll('[data-en-aria]').forEach(el => {
-      if (!el.dataset.idAria) {
-         el.dataset.idAria = el.getAttribute('aria-label') || '';
-      }
-      el.setAttribute('aria-label', lang === 'en' ? el.getAttribute('data-en-aria') : el.dataset.idAria);
-   });
-
-   // title swap
-   document.querySelectorAll('[data-en-title]').forEach(el => {
-      if (!el.dataset.idTitle) {
-         el.dataset.idTitle = el.getAttribute('title') || '';
-      }
-      el.setAttribute('title', lang === 'en' ? el.getAttribute('data-en-title') : el.dataset.idTitle);
-   });
-
-   // Reset submit button label to current idle state in the right language
-   const submitBtn = document.querySelector('.contact-form .btn');
-   if (submitBtn && !submitBtn.disabled) {
-      submitBtn.textContent = submitLabels.idle[lang];
-   }
-}
-
-if (langSwitch) {
-   langSwitch.addEventListener('click', () => {
-      const nextLang = langSwitch.getAttribute('data-lang') === 'id' ? 'en' : 'id';
-      applyLanguage(nextLang);
-   });
-}
-
-document.addEventListener('DOMContentLoaded', () => applyLanguage(currentLang));
+   document.addEventListener('DOMContentLoaded', () => applyLanguage(currentLang));
+} catch (err) { /* keep the rest of the page working even if this fails */ }
 
 // ---------- Rotating hero headline ----------
-(function initHeroRotator() {
-   const rotator = document.getElementById('heroRotator');
-   if (!rotator) return;
-   const items = Array.from(rotator.querySelectorAll('.hero-rotator-item'));
-   if (items.length < 2) return;
+try {
+   (function initHeroRotator() {
+      const rotator = document.getElementById('heroRotator');
+      if (!rotator) return;
+      const items = Array.from(rotator.querySelectorAll('.hero-rotator-item'));
+      if (items.length < 2) return;
 
-   let index = items.findIndex(el => el.classList.contains('is-active'));
-   if (index === -1) index = 0;
+      let index = items.findIndex(el => el.classList.contains('is-active'));
+      if (index === -1) index = 0;
 
-   setInterval(() => {
-      const current = items[index];
-      index = (index + 1) % items.length;
-      const next = items[index];
+      setInterval(() => {
+         const current = items[index];
+         index = (index + 1) % items.length;
+         const next = items[index];
 
-      current.classList.remove('is-active');
-      next.classList.add('is-active');
-   }, 3000);
-})();
+         current.classList.remove('is-active');
+         next.classList.add('is-active');
+      }, 3000);
+   })();
+} catch (err) { /* ignore */ }
 
 // Contact form submission (demo only, no backend wired up)
-const contactForm = document.querySelector('.contact-form');
-if (contactForm) {
-   contactForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const btn = contactForm.querySelector('.btn');
+try {
+   const contactForm = document.querySelector('.contact-form');
+   if (contactForm) {
+      contactForm.addEventListener('submit', (e) => {
+         e.preventDefault();
+         const btn = contactForm.querySelector('.btn');
 
-      btn.textContent = submitLabels.sending[currentLang];
-      btn.disabled = true;
+         btn.textContent = submitLabels.sending[currentLang];
+         btn.disabled = true;
 
-      setTimeout(() => {
-         btn.textContent = submitLabels.sent[currentLang];
          setTimeout(() => {
-            btn.textContent = submitLabels.idle[currentLang];
-            btn.disabled = false;
-            contactForm.reset();
-         }, 2200);
-      }, 900);
-   });
-}
+            btn.textContent = submitLabels.sent[currentLang];
+            setTimeout(() => {
+               btn.textContent = submitLabels.idle[currentLang];
+               btn.disabled = false;
+               contactForm.reset();
+            }, 2200);
+         }, 900);
+      });
+   }
+} catch (err) { /* ignore */ }
 
 // Product 3 (derivative products) is collapsed behind a "view more" toggle.
 (function initProductDetailsToggle() {
@@ -247,15 +285,23 @@ if (contactForm) {
       if (!content || !content.classList.contains('p-card-collapsible')) return;
 
       toggle.addEventListener('click', () => {
-         const willExpand = !content.classList.contains('is-open');
-         toggle.setAttribute('aria-expanded', String(willExpand));
-         renderLabel(toggle);
+         try {
+            const willExpand = !content.classList.contains('is-open');
+            toggle.setAttribute('aria-expanded', String(willExpand));
+            renderLabel(toggle);
 
-         if (willExpand) {
-            openContent(content);
-         } else {
-            closeContent(content);
-            toggle.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            if (willExpand) {
+               openContent(content);
+            } else {
+               closeContent(content);
+               toggle.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+         } catch (err) {
+            // Last-resort fallback: guarantee the panel becomes visible even
+            // if the animated measurement above fails for any reason.
+            const isOpen = content.classList.toggle('is-open');
+            content.style.maxHeight = isOpen ? 'none' : '0px';
+            toggle.setAttribute('aria-expanded', String(isOpen));
          }
       });
 
@@ -564,18 +610,30 @@ if (contactForm) {
    const hintEl = document.getElementById('searchHint');
 
    // The top-bar search icon is a desktop-only shortcut (mobile users get the
-   // search entry inside the hamburger menu instead). Beyond hiding it with
-   // CSS, also pull it out of tab order / the accessibility tree on mobile so
-   // it can't be focused or announced while invisible.
-   const mobileNavQuery = window.matchMedia('(max-width:859px)');
-   function syncTriggerAvailability(e) {
-      const isMobile = e.matches;
-      trigger.toggleAttribute('hidden', isMobile);
-      trigger.setAttribute('tabindex', isMobile ? '-1' : '0');
-      trigger.setAttribute('aria-hidden', String(isMobile));
+   // search entry inside the hamburger menu instead). CSS already hides it by
+   // default and only shows it at desktop widths, so this just keeps it out
+   // of the tab order / accessibility tree on mobile. Wrapped in try/catch so
+   // that on any browser without matchMedia listener support, this never
+   // throws and breaks the rest of the script.
+   try {
+      const mobileNavQuery = window.matchMedia('(min-width:860px)');
+      function syncTriggerAvailability(e) {
+         const isDesktop = e.matches;
+         trigger.toggleAttribute('hidden', !isDesktop);
+         trigger.setAttribute('tabindex', isDesktop ? '0' : '-1');
+         trigger.setAttribute('aria-hidden', String(!isDesktop));
+      }
+      syncTriggerAvailability(mobileNavQuery);
+      if (typeof mobileNavQuery.addEventListener === 'function') {
+         mobileNavQuery.addEventListener('change', syncTriggerAvailability);
+      } else if (typeof mobileNavQuery.addListener === 'function') {
+         // Safari <14 / older WebViews only support the legacy API.
+         mobileNavQuery.addListener(syncTriggerAvailability);
+      }
+   } catch (err) {
+      // If matchMedia isn't available at all, CSS alone still handles
+      // showing/hiding the button correctly — just skip this enhancement.
    }
-   syncTriggerAvailability(mobileNavQuery);
-   mobileNavQuery.addEventListener('change', syncTriggerAvailability);
 
    // On article pages there is no #home / #produk etc. in this document,
    // so search results should link back to index.html with the anchor.
