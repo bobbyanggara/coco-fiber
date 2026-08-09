@@ -1289,7 +1289,7 @@ h1,h2,h3{font-family:var(--display);color:var(--husk-950);font-weight:600;letter
 .search-result-text strong mark{background:rgba(181,113,60,0.28);color:var(--husk-950);border-radius:2px;padding:0 1px;}
 .search-result-text p{
   font-size:0.79rem;color:var(--ink-soft);margin-top:0.15rem;
-  display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;
+  display:-webkit-box;-webkit-line-clamp:1;line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;
 }
 .search-result-arrow{
   width:16px;height:16px;color:var(--ink-soft);flex-shrink:0;margin-top:0.5rem;
