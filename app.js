@@ -49,26 +49,10 @@ try {
    });
 } catch (err) { /* ignore */ }
 
-// Active nav link on scroll
-try {
-   var updateActiveMenu = function updateActiveMenu() {
-      const sections = document.querySelectorAll('section[id]');
-      const links = document.querySelectorAll('.nav-links a');
-      let current = 'home';
-
-      sections.forEach(section => {
-         if (window.scrollY >= section.offsetTop - 160) {
-            current = section.getAttribute('id');
-         }
-      });
-
-      links.forEach(link => {
-         link.classList.toggle('active', link.getAttribute('href') === `#${current}`);
-      });
-   };
-   window.addEventListener('scroll', updateActiveMenu);
-   document.addEventListener('DOMContentLoaded', updateActiveMenu);
-} catch (err) { /* ignore */ }
+// Nav active state is static per page (set via class="active" in the HTML,
+// e.g. "Beranda" on index.html, "Artikel" on semua-artikel.html) and no
+// longer tracks scroll position — Home stays highlighted the whole time
+// you're on the homepage, even after scrolling past other sections.
 
 // Scroll-triggered fade-ins + counters
 try {
