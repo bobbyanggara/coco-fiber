@@ -1,5 +1,18 @@
 // CV Kreasi Asa Indonesia: site scripts
 
+// Safety net: some mobile in-app browsers (e.g. WhatsApp's WebView) can
+// briefly report a wider layout viewport before the first paint settles,
+// which visually shifts the page horizontally until the user scrolls.
+// Forcing horizontal scroll back to 0 on load/resize prevents that.
+(function preventHorizontalShift() {
+   function resetX() {
+      if (window.scrollX !== 0) window.scrollTo(0, window.scrollY);
+   }
+   resetX();
+   window.addEventListener('load', resetX);
+   window.addEventListener('resize', resetX);
+})();
+
 // Mobile menu toggle
 try {
    const mobileMenu = document.getElementById('mobileMenu');
