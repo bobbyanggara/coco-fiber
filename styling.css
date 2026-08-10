@@ -1344,6 +1344,7 @@ h1,h2,h3{font-family:var(--display);color:var(--husk-950);font-weight:600;letter
   .hero-actions{flex-direction:row;}
 
   .article-grid{grid-template-columns:repeat(3,1fr);}
+  .related-grid{grid-template-columns:repeat(3,1fr);}
 
   .about{
     grid-template-columns:0.8fr 1.2fr;align-items:center;gap:3rem;
