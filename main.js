@@ -357,6 +357,15 @@ try {
    }, { passive: true });
    window.addEventListener('resize', updateArrows);
    updateArrows();
+
+   // Once the user has swiped the row themselves, the hint has done its job — hide it.
+   const swipeHint = document.querySelector('.product-swipe-hint');
+   if (swipeHint) {
+      track.addEventListener('scroll', () => {
+         swipeHint.style.opacity = '0';
+         swipeHint.style.pointerEvents = 'none';
+      }, { once: true, passive: true });
+   }
 })();
 
 // Product image lightbox: click (or Enter/Space) a product photo to view it enlarged.

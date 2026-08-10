@@ -388,14 +388,37 @@ h1,h2,h3{font-family:var(--display);color:var(--husk-950);font-weight:600;letter
 .section-head h2{font-size:clamp(1.6rem,5vw,2.2rem);}
 
 /* ---------- Product grid — horizontal carousel: min. 2 cards visible, rest via side-scroll ---------- */
+
+/* Explicit "swipe sideways" hint, mobile only — the fade edge alone wasn't
+   clear enough that the row scrolls horizontally */
+.product-swipe-hint{
+  display:flex;align-items:center;justify-content:center;gap:0.45rem;
+  font-family:var(--mono);font-size:0.72rem;letter-spacing:0.03em;
+  color:var(--ink-soft);
+  margin:-0.8rem 0 1.1rem;
+  animation:swipeHintNudge 1.8s ease-in-out infinite;
+  transition:opacity 0.4s ease;
+}
+.product-swipe-hint svg{width:15px;height:15px;color:var(--coir-600);flex-shrink:0;}
+@keyframes swipeHintNudge{
+  0%,100%{transform:translateX(0);}
+  50%{transform:translateX(4px);}
+}
+@media (min-width:640px){
+  .product-swipe-hint{display:none;}
+}
+@media (prefers-reduced-motion:reduce){
+  .product-swipe-hint{animation:none;}
+}
+
 .product-slider{
   position:relative;
 }
 /* Subtle edge fade hints that more cards are scrollable, mobile only */
 .product-slider::after{
   content:'';
-  position:absolute;top:0;right:0;bottom:1.1rem;width:2.2rem;
-  background:linear-gradient(to right, transparent, var(--kraft-100) 90%);
+  position:absolute;top:0;right:0;bottom:1.1rem;width:3rem;
+  background:linear-gradient(to right, transparent, var(--kraft-100) 85%);
   pointer-events:none;
 }
 @media (min-width:640px){
@@ -1096,12 +1119,13 @@ h1,h2,h3{font-family:var(--display);color:var(--husk-950);font-weight:600;letter
   .hero{
     min-height:100svh;
     min-height:100vh; /* fallback for browsers without svh support */
-    display:flex;flex-direction:column;justify-content:space-between;
-    padding-top:5.5rem;padding-bottom:0.5rem;
+    display:flex;flex-direction:column;justify-content:center;
+    gap:1.4rem;
+    padding-top:5.5rem;padding-bottom:1.2rem;
   }
-  .hero-inner{padding:1rem 0 0.5rem;}
-  .hero-stats{margin-top:0.5rem;}
-  .hero-scroll-cue{display:flex;margin:0.9rem auto 0.4rem;}
+  .hero-inner{padding:0;}
+  .hero-stats{margin-top:0;}
+  .hero-scroll-cue{display:flex;margin:0 auto;}
 
   .fab-contact{right:1rem;bottom:1rem;}
   .fab-main{padding:0.8rem 1.1rem;font-size:0.86rem;}
@@ -1111,8 +1135,7 @@ h1,h2,h3{font-family:var(--display);color:var(--husk-950);font-weight:600;letter
 
 /* Very short mobile screens (small phones, landscape): trim vertical spacing so the whole hero fits without scrolling */
 @media (max-width:640px) and (max-height:700px){
-  .hero{padding-top:4.6rem;}
-  .hero-inner{padding:0.6rem 0 0.3rem;}
+  .hero{gap:0.8rem;padding-top:4.6rem;}
   .hero h1{margin-bottom:0.6rem;}
   .hero-lead{margin-bottom:1.1rem;}
   .hero-stat{padding:0.9rem 0.5rem;}
