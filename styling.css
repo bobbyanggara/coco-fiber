@@ -376,6 +376,9 @@ h1,h2,h3{font-family:var(--display);color:var(--husk-950);font-weight:600;letter
   max-width:var(--max);margin:0 auto;
   padding:4rem 1.25rem;
 }
+@media (max-width:479px){
+  .section{padding:3rem 1rem;}
+}
 .section-alt{background:var(--kraft-200);max-width:100%;}
 .section-alt > *{max-width:var(--max);margin-left:auto;margin-right:auto;}
 .section-head{text-align:center;margin-bottom:2.4rem;}
@@ -385,6 +388,16 @@ h1,h2,h3{font-family:var(--display);color:var(--husk-950);font-weight:600;letter
 /* ---------- Product grid — horizontal carousel: min. 2 cards visible, rest via side-scroll ---------- */
 .product-slider{
   position:relative;
+}
+/* Subtle edge fade hints that more cards are scrollable, mobile only */
+.product-slider::after{
+  content:'';
+  position:absolute;top:0;right:0;bottom:1.1rem;width:2.2rem;
+  background:linear-gradient(to right, transparent, var(--kraft-100) 90%);
+  pointer-events:none;
+}
+@media (min-width:640px){
+  .product-slider::after{display:none;}
 }
 
 .product-grid{
@@ -414,8 +427,8 @@ h1,h2,h3{font-family:var(--display);color:var(--husk-950);font-weight:600;letter
   display:flex;
   flex-direction:column;
   scroll-snap-align:start;
-  flex:0 0 87%;
-  max-width:440px;
+  flex:0 0 90%;
+  max-width:400px;
   transition:transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
 }
 .p-card:hover{transform:translateY(-4px);box-shadow:var(--shadow);border-color:var(--line-strong);}
@@ -470,6 +483,14 @@ h1,h2,h3{font-family:var(--display);color:var(--husk-950);font-weight:600;letter
 .p-card h3{font-size:1.5rem;margin-bottom:0.6rem;}
 .p-card-desc{font-size:0.92rem;color:var(--ink-soft);margin-bottom:1.1rem;line-height:1.7;max-width:62ch;}
 
+/* Small mobile phones: tighten card so it doesn't feel oversized / cramped */
+@media (max-width:479px){
+  .p-card-body{padding:1.25rem 1.15rem 1.5rem;}
+  .p-card h3{font-size:1.25rem;}
+  .p-card-desc{font-size:0.87rem;line-height:1.6;}
+  .p-card-eyebrow{font-size:0.62rem;}
+}
+
 .p-card-features{
   list-style:none;margin-bottom:1.3rem;
   display:grid;grid-template-columns:1fr;gap:0.6rem;
@@ -511,6 +532,13 @@ h1,h2,h3{font-family:var(--display);color:var(--husk-950);font-weight:600;letter
 .qs-value{font-family:var(--display);font-size:1.05rem;font-weight:600;color:var(--husk-950);}
 .qs-sub{display:block;font-family:var(--sans);font-size:0.74rem;color:var(--ink-soft);margin-top:0.1rem;}
 
+/* Small mobile phones: stack quickspecs to 1 column, shrink padding/text so tiles don't feel cramped */
+@media (max-width:479px){
+  .p-card-quickspecs{grid-template-columns:1fr;gap:0.6rem;margin-bottom:1.3rem;}
+  .p-card-quickspecs > div{padding:0.8rem 0.9rem;}
+  .qs-value{font-size:0.95rem;}
+}
+
 /* Lead time / specification tables, plain and side by side, like the reference site */
 .p-card-details{
   padding-top:1.5rem;
@@ -525,11 +553,19 @@ h1,h2,h3{font-family:var(--display);color:var(--husk-950);font-weight:600;letter
 .p-card-table th,.p-card-table td{
   padding:0.7rem 0.9rem;text-align:left;
   border-bottom:1px solid var(--line);
+  white-space:nowrap;
 }
 .p-card-table th{background:var(--husk-950);color:#fff;font-weight:700;border-bottom:none;}
 .p-card-table td:first-child{color:var(--frond-700);font-weight:600;}
 .p-card-table td:last-child{color:var(--ink);}
 .p-card-table tr:nth-child(even) td{background:var(--kraft-200);}
+
+/* Small mobile phones: tighter table cells so specs don't force awkward wrapping */
+@media (max-width:479px){
+  .p-card-table{font-size:0.78rem;}
+  .p-card-table th,.p-card-table td{padding:0.55rem 0.6rem;}
+  .p-card-table-title{font-size:0.95rem;}
+}
 
 /* Wide desktop layout: image left, content right — only when each card (now ~50% of viewport
    in the 2-up carousel) is actually wide enough to fit this layout comfortably */
