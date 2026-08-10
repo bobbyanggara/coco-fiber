@@ -368,6 +368,22 @@ try {
    }
 })();
 
+// Mobile only: product cards stack vertically and only the first one shows
+// by default. Tapping "Lihat Produk Selengkapnya" reveals the rest in place.
+(function initProductShowMore() {
+   const btn = document.getElementById('productShowMore');
+   const track = document.getElementById('productTrack');
+   if (!btn || !track) return;
+
+   btn.addEventListener('click', () => {
+      track.querySelectorAll('.p-card.is-hidden-mobile').forEach(card => {
+         card.classList.remove('is-hidden-mobile');
+      });
+      btn.setAttribute('aria-expanded', 'true');
+      btn.style.display = 'none';
+   });
+})();
+
 // Product image lightbox: click (or Enter/Space) a product photo to view it enlarged.
 (function initProductImageLightbox() {
    const triggers = document.querySelectorAll('.p-card-img');

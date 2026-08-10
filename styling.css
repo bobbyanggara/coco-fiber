@@ -443,6 +443,28 @@ h1,h2,h3{font-family:var(--display);color:var(--husk-950);font-weight:600;letter
 .product-grid::-webkit-scrollbar-thumb{background:var(--line);border-radius:999px;}
 .product-grid::-webkit-scrollbar-thumb:hover{background:var(--coir-600);}
 
+/* "Show more products" — mobile only, revealed under the visible card(s) */
+.product-show-more{
+  display:none;
+  width:100%;
+  align-items:center;justify-content:center;gap:0.5rem;
+  margin-top:0.4rem;
+  padding:0.95rem 1.4rem;
+  background:transparent;
+  border:1.5px dashed var(--line-strong);
+  border-radius:var(--radius);
+  font-family:var(--sans);font-size:0.92rem;font-weight:600;
+  color:var(--coir-600);
+  cursor:pointer;
+  transition:background 0.25s ease, border-color 0.25s ease;
+}
+.product-show-more:hover{background:var(--kraft-200);border-color:var(--coir-600);}
+.product-show-more svg{width:18px;height:18px;transition:transform 0.3s ease;}
+.product-show-more[aria-expanded="true"] svg{transform:rotate(180deg);}
+@media (max-width:639px){
+  .product-show-more{display:flex;}
+}
+
 .p-card{
   position:relative;
   background:var(--card);
@@ -457,6 +479,28 @@ h1,h2,h3{font-family:var(--display);color:var(--husk-950);font-weight:600;letter
   transition:transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
 }
 .p-card:hover{transform:translateY(-4px);box-shadow:var(--shadow);border-color:var(--line-strong);}
+
+/* Mobile: stop side-scrolling — stack cards vertically instead, but keep
+   it from getting too long by default: only the 1st card shows, the rest
+   are revealed with a "show more" button (see .product-show-more JS). */
+@media (max-width:639px){
+  .product-swipe-hint{display:none;}
+  .product-slider::after{display:none;}
+  .product-slider .slider-arrow{display:none;}
+
+  .product-grid{
+    flex-direction:column;
+    overflow-x:visible;
+    scroll-snap-type:none;
+    padding:0.3rem 0 0.4rem;
+  }
+  .p-card{
+    flex:1 1 auto;
+    width:100%;
+    max-width:none;
+  }
+  .p-card.is-hidden-mobile{display:none;}
+}
 
 /* From tablet up: exactly 2 cards fit in view, the rest peeks in and needs a side-scroll */
 @media (min-width:640px){
