@@ -709,7 +709,8 @@ h1,h2,h3{font-family:var(--display);color:var(--husk-950);font-weight:600;letter
   font-size:0.68rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;
   color:var(--coir-600);margin-bottom:0.55rem;
 }
-.art-card h3{font-size:1.1rem;line-height:1.35;margin-bottom:0.75rem;}
+.art-card h3{font-size:1.1rem;line-height:1.35;margin-bottom:0.75rem;transition:color 0.25s ease;}
+.art-card:hover h3{color:var(--coir-600);}
 .art-card > p{font-size:0.9rem;color:var(--ink-soft);margin-bottom:0.95rem;line-height:1.65;}
 .art-card ul li{
   font-size:0.84rem;color:var(--ink);padding-left:1.1rem;position:relative;margin-bottom:0.4rem;

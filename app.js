@@ -732,13 +732,17 @@ try {
       // showing/hiding the button correctly — just skip this enhancement.
    }
 
-   // On article pages there is no #home / #produk etc. in this document,
-   // so search results should link back to index.html with the anchor.
-   const onIndexPage = !!document.querySelector('main, #home, #produk, #kontak') &&
-      /\/(index\.html)?$/.test(window.location.pathname);
+   // Tentang, Produk, and Kontak each now live on their own standalone page,
+   // so search results link straight there instead of to a homepage anchor.
+   // Only "home", "artikel", and "testimoni" still resolve to a section on
+   // another page (index.html / semua-artikel.html).
+   const dedicatedPages = { tentang: 'tentang.html', produk: 'produk.html', kontak: 'kontak.html' };
 
    function hrefFor(anchor) {
-      return onIndexPage ? `#${anchor}` : `index.html#${anchor}`;
+      if (dedicatedPages[anchor]) return dedicatedPages[anchor];
+      if (anchor === 'testimoni') return 'tentang.html#testimoni';
+      if (anchor === 'artikel') return 'index.html#artikel';
+      return 'index.html#home';
    }
 
    function getLang() {
