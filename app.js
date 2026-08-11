@@ -116,6 +116,12 @@ try {
    document.querySelectorAll('.fade-in').forEach(el => el.classList.add('animate'));
 }
 
+// FAB stays fixed in place, with a z-index higher than the footer's (see
+// .footer / .fab-contact in styling.css) so it stays visible instead of
+// being covered by the footer. It's also actively lifted clear of the
+// footer via JS (see initFabContact below) so it never physically covers
+// the footer's social icons / product links and blocks clicks on them.
+
 
 // ---------- Safe localStorage wrapper ----------
 // Some mobile browsers/WebViews (Safari Private Browsing, in-app browsers
@@ -481,6 +487,46 @@ try {
    fab.querySelectorAll('.fab-option').forEach(opt => {
       opt.addEventListener('click', closeFab);
    });
+
+   // Lift the button clear of the footer instead of relying on z-index.
+   // Raising the FAB's z-index above the footer fixed the "button
+   // disappears" bug, but it also made the FAB visually/physically sit on
+   // top of the footer's social icons and product links whenever they
+   // happened to be under it, blocking clicks on them. Instead, we keep
+   // the FAB fixed as normal, and once the footer's top edge gets close
+   // enough to overlap it, we translate the FAB upward by exactly that
+   // overlap amount (plus a small gap) so it always sits just above the
+   // footer and never covers any footer content.
+   const footer = document.querySelector('.footer');
+   if (footer) {
+      const GAP = 16; // px breathing room between FAB and footer top
+      let ticking = false;
+
+      function naturalBottomOffset() {
+         const val = parseFloat(getComputedStyle(fab).bottom);
+         return Number.isFinite(val) ? val : 0;
+      }
+
+      function update() {
+         ticking = false;
+         const footerTop = footer.getBoundingClientRect().top;
+         const naturalBottomEdgeY = window.innerHeight - naturalBottomOffset();
+         const maxAllowedBottomEdgeY = footerTop - GAP;
+         const lift = naturalBottomEdgeY - maxAllowedBottomEdgeY;
+         fab.style.transform = lift > 0 ? `translateY(-${lift}px)` : '';
+      }
+
+      function onScrollOrResize() {
+         if (!ticking) {
+            ticking = true;
+            requestAnimationFrame(update);
+         }
+      }
+
+      window.addEventListener('scroll', onScrollOrResize, { passive: true });
+      window.addEventListener('resize', onScrollOrResize);
+      update();
+   }
 })();
 
 // ---------- Scroll progress bar ----------
@@ -1178,3 +1224,18 @@ try {
       });
    }
 } catch (err) { /* keep the rest of the page working even if this fails */ }
+
+
+// Hero CTA reliability fallback — only the two hero buttons.
+try {
+   const heroEmail = document.querySelector('#home > .hero-actions .btn-primary');
+   const heroWhatsApp = document.querySelector('#home > .hero-actions .btn-ghost');
+   if (heroEmail) heroEmail.addEventListener('click', function(e){
+      e.preventDefault();
+      window.location.href = 'mailto:apasaja@gmail.com';
+   });
+   if (heroWhatsApp) heroWhatsApp.addEventListener('click', function(e){
+      e.preventDefault();
+      window.location.href = this.href;
+   });
+} catch (err) {}

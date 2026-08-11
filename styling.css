@@ -105,16 +105,18 @@ h1,h2,h3{font-family:var(--display);color:var(--husk-950);font-weight:600;letter
   font-weight:600;font-size:0.95rem;
   text-decoration:none;
   border:1.5px solid transparent;
-  transition:transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease;
+  transition:transform 0.28s cubic-bezier(.34,1.56,.64,1), box-shadow 0.28s ease, background 0.28s ease, color 0.28s ease;
   cursor:pointer;
   white-space:nowrap;
+  will-change:transform;
 }
 .btn-primary{background:var(--coir-600);color:#fff;box-shadow:0 6px 16px rgba(181,113,60,0.28);}
-.btn-primary:hover{background:var(--husk-950);transform:translateY(-2px);box-shadow:0 10px 24px rgba(28,20,16,0.28);}
+.btn-primary:hover{background:var(--husk-950);transform:translateY(-4px) scale(1.045);box-shadow:0 14px 28px rgba(28,20,16,0.35);}
+.btn-primary:active{transform:translateY(-1px) scale(1.01);}
 .btn-ghost{
   background:transparent;border-color:rgba(255,255,255,0.45);color:#fff;
   position:relative;overflow:hidden;z-index:0;
-  transition:transform 0.2s ease, box-shadow 0.2s ease, color 0.3s ease 0.05s, border-color 0.35s ease;
+  transition:transform 0.28s cubic-bezier(.34,1.56,.64,1), box-shadow 0.28s ease, color 0.3s ease 0.05s, border-color 0.35s ease;
 }
 .btn-ghost::before{
   content:'';
@@ -125,8 +127,9 @@ h1,h2,h3{font-family:var(--display);color:var(--husk-950);font-weight:600;letter
   transition:transform 0.45s cubic-bezier(.65,0,.35,1);
   z-index:-1;
 }
-.btn-ghost:hover{border-color:#25D366;}
+.btn-ghost:hover{border-color:#25D366;transform:translateY(-4px) scale(1.045);box-shadow:0 14px 28px rgba(0,0,0,0.28);}
 .btn-ghost:hover::before{transform:scaleX(1);}
+.btn-ghost:active{transform:translateY(-1px) scale(1.01);}
 
 /* ---------- Quote CTA ---------- */
 .quote-cta{
@@ -1088,6 +1091,7 @@ h1,h2,h3{font-family:var(--display);color:var(--husk-950);font-weight:600;letter
   color:rgba(247,243,236,0.85);
   padding:3.2rem 1.25rem 0;
   position:relative;
+  z-index:1600;
 }
 .footer-grid{
   display:grid;
@@ -1152,9 +1156,19 @@ h1,h2,h3{font-family:var(--display);color:var(--husk-950);font-weight:600;letter
 
 /* ---------- Floating Contact Button ---------- */
 .fab-contact{
-  position:fixed;right:1.4rem;bottom:1.4rem;z-index:1500;
+  position:fixed;right:1.4rem;bottom:1.4rem;z-index:1650;
   display:flex;flex-direction:column;align-items:flex-end;gap:0.7rem;
+  transition:transform 0.25s ease, opacity 0.25s ease;
 }
+/* .footer has z-index:1600 (position:relative), so the FAB's z-index must
+   stay HIGHER than the footer's or the footer's opaque background paints
+   over the fixed button and it visually disappears.
+   On top of that, app.js actively lifts the FAB (via transform:translateY)
+   as soon as the footer's top edge would overlap it, so the button never
+   physically sits on top of the footer's social icons / product links and
+   blocks clicks on them — it just floats right above the footer instead.
+   Both pieces are needed: z-index keeps it visible, the JS lift keeps
+   footer content clickable. See initFabContact() in app.js. */
 .fab-main{
   position:relative;
   display:flex;align-items:center;gap:0.6rem;
@@ -1256,7 +1270,7 @@ h1,h2,h3{font-family:var(--display);color:var(--husk-950);font-weight:600;letter
 
 /* ---------- AI Chat Widget ---------- */
 .ai-chat-window{
-  position:fixed;right:1.4rem;bottom:1.4rem;z-index:1600;
+  position:fixed;right:1.4rem;bottom:1.4rem;z-index:1700;
   width:min(370px, calc(100vw - 2rem));
   height:min(560px, calc(100vh - 2rem));
   background:var(--paper);border-radius:var(--radius-lg);
@@ -1573,7 +1587,7 @@ body.search-open{overflow:hidden;}
 
 /* ---------- Lead Capture Popup ---------- */
 .lead-popup-overlay{
-  position:fixed;inset:0;z-index:1200;
+  position:fixed;inset:0;z-index:1800;
   background:rgba(28,20,16,0.55);
   display:flex;align-items:center;justify-content:center;
   padding:1.25rem;
@@ -1699,4 +1713,22 @@ body.img-lightbox-open{overflow:hidden;}
 @media (max-width:480px){
   .lead-popup{padding:1.8rem 1.4rem 1.5rem;}
   .lead-popup h3{font-size:1.2rem;}
+}
+
+
+/* FINAL HERO CTA FIX — original visual design preserved. */
+.hero > .hero-actions{
+  position:relative;
+  z-index:5;
+  max-width:640px;
+  margin:-3rem auto 3rem;
+  pointer-events:auto !important;
+}
+.hero > .hero-actions .btn{
+  pointer-events:auto !important;
+  position:relative;
+  z-index:6;
+}
+@media (max-width:639px){
+  .hero > .hero-actions{margin:-2.5rem auto 2.5rem;}
 }
