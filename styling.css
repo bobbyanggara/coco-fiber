@@ -52,6 +52,29 @@ body{
   position:relative;
   -webkit-font-smoothing:antialiased;
 }
+/* body is a column flex container (for sticky footer etc). Its direct children
+   (header, section, footer) are flex items with a "stretch" cross size — but
+   when a deeply nested nowrap element (like a spec table cell) needs more
+   room than the viewport, Chromium can size the flex item to that content's
+   width instead of the container's width. Because html/body use
+   overflow-x:hidden (not auto), the excess doesn't scroll — it just gets
+   clipped off-screen, which reads as "content cut off" on mobile.
+   Giving each child an explicit, definite width locks it to the container's
+   actual width instead of letting it stretch-to-content, so inner
+   overflow-x:auto wrappers (like .p-card-table-wrap) can do their job. */
+body > *{min-width:0;width:100%;}
+
+/* The same "flex item stretches to content instead of container" issue
+   repeats at every nested flex level inside the product cards (.product-grid
+   on mobile, .p-card, .p-card-body). Cap each link in that chain so a long,
+   non-wrapping spec-table cell can never force the card — or the whole page
+   — wider than the screen. max-width (not width) so it doesn't fight the
+   flex-basis used for the 2-up desktop layout further down this file. */
+.product-grid,
+.p-card,
+.p-card-body{min-width:0;max-width:100%;}
+.p-card-details,
+.p-card-table-wrap{min-width:0;}
 
 img{max-width:100%;display:block;}
 ul{list-style:none;}
