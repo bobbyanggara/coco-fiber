@@ -359,13 +359,28 @@ try {
    const track = document.getElementById('productTrack');
    if (!btn || !track) return;
 
-   btn.addEventListener('click', () => {
+   const revealAll = () => {
       track.querySelectorAll('.p-card.is-hidden-mobile').forEach(card => {
          card.classList.remove('is-hidden-mobile');
       });
       btn.setAttribute('aria-expanded', 'true');
       btn.style.display = 'none';
-   });
+   };
+
+   btn.addEventListener('click', revealAll);
+
+   // If arriving via a direct link to a specific product card (e.g. footer link
+   // to #product-cocopeat), reveal all cards first so the target isn't hidden,
+   // then scroll to it.
+   if (location.hash) {
+      const target = document.querySelector(location.hash);
+      if (target && target.classList.contains('p-card')) {
+         revealAll();
+         requestAnimationFrame(() => {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+         });
+      }
+   }
 })();
 
 // Product image lightbox: click (or Enter/Space) a product photo to view it enlarged.
