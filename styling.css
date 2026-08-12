@@ -1159,7 +1159,18 @@ h1,h2,h3{font-family:var(--display);color:var(--husk-950);font-weight:600;letter
   position:fixed;right:1.4rem;bottom:1.4rem;z-index:1650;
   display:flex;flex-direction:column;align-items:flex-end;gap:0.7rem;
   transition:transform 0.25s ease, opacity 0.25s ease;
+  /* Without this, the global "body > *{width:100%}" reset (see top of
+     this file) stretches this fixed container to the full viewport
+     width. It stays visually invisible outside the pill button, but
+     the invisible box still captures clicks across that entire strip
+     of the page — including, at some scroll positions, right on top
+     of the hero's Email/WhatsApp buttons. This is the actual cause of
+     the hero CTA being unclickable until scrolling: not the hero
+     itself, but this widget silently overlapping it. */
+  width:fit-content;
+  pointer-events:none;
 }
+.fab-contact > *{ pointer-events:auto; }
 /* .footer has z-index:1600 (position:relative), so the FAB's z-index must
    stay HIGHER than the footer's or the footer's opaque background paints
    over the fixed button and it visually disappears.
@@ -1716,19 +1727,44 @@ body.img-lightbox-open{overflow:hidden;}
 }
 
 
-/* FINAL HERO CTA FIX — original visual design preserved. */
-.hero > .hero-actions{
-  position:relative;
-  z-index:5;
-  max-width:640px;
-  margin:-3rem auto 3rem;
-  pointer-events:auto !important;
+/* =========================================================
+   HERO CTA — CLICK FIX (consolidated)
+   Keeps the hero's entrance animation visually, but the hero
+   content itself never becomes non-interactive: nothing above
+   it can eat pointer events, and nothing below load/scroll is
+   required for the buttons to be clickable from frame one.
+   ========================================================= */
+.navbar{ animation:none !important; }
+
+.hero .eyebrow,
+.hero .hero-rotator,
+.hero .hero-lead,
+.hero .hero-actions,
+.hero .hero-stats,
+.hero-inner{
+  animation:none !important;
+  opacity:1 !important;
+  transform:none !important;
 }
-.hero > .hero-actions .btn{
-  pointer-events:auto !important;
-  position:relative;
-  z-index:6;
-}
-@media (max-width:639px){
-  .hero > .hero-actions{margin:-2.5rem auto 2.5rem;}
-}
+
+.hero-inner,
+.hero-actions,
+.hero-actions .btn{ position:relative; }
+
+.hero-inner{ z-index:10 !important; }
+.hero-actions{ z-index:30 !important; pointer-events:auto !important; }
+.hero-actions .btn{ z-index:31 !important; pointer-events:auto !important; cursor:pointer !important; }
+
+/* Decorative/background layers must never receive pointer input. */
+.hero-bg,
+.hero::before,
+.hero::after{ pointer-events:none !important; }
+
+/* Closed overlays never participate in pointer hit-testing, so they
+   can't sit invisibly on top of the hero before they're opened. */
+.search-overlay,
+.lead-popup-overlay,
+.img-lightbox-overlay{ pointer-events:none !important; }
+.search-overlay.open,
+.lead-popup-overlay.is-open,
+.img-lightbox-overlay.is-open{ pointer-events:auto !important; }

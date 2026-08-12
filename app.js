@@ -602,10 +602,12 @@ try {
       if (heroBg) {
          heroBg.style.transform = `translate3d(0, ${scrollY * heroBgFactor}px, 0)`;
       }
+      // Hero content is intentionally kept static.
+      // The previous transform/opacity animation on #heroInner could
+      // interfere with the CTA hit area before the first scroll.
       if (heroInner) {
-         const fade = clamp(1 - scrollY / (viewportH * 0.85), 0, 1);
-         heroInner.style.transform = `translate3d(0, ${scrollY * heroInnerFactor}px, 0)`;
-         heroInner.style.opacity = fade;
+         heroInner.style.transform = 'none';
+         heroInner.style.opacity = '1';
       }
 
       floaters.forEach(({ el, strength }) => {
@@ -625,6 +627,12 @@ try {
          ticking = true;
       }
    }, { passive: true });
+
+   // Run once immediately on load too — otherwise heroInner only gets
+   // reset to a stable (non-transformed) state after the FIRST scroll
+   // event, which is what made the hero CTA buttons feel unclickable
+   // until the user scrolled a little.
+   update();
 
    window.addEventListener('resize', () => {
       viewportH = window.innerHeight;
@@ -1226,16 +1234,3 @@ try {
 } catch (err) { /* keep the rest of the page working even if this fails */ }
 
 
-// Hero CTA reliability fallback — only the two hero buttons.
-try {
-   const heroEmail = document.querySelector('#home > .hero-actions .btn-primary');
-   const heroWhatsApp = document.querySelector('#home > .hero-actions .btn-ghost');
-   if (heroEmail) heroEmail.addEventListener('click', function(e){
-      e.preventDefault();
-      window.location.href = 'mailto:apasaja@gmail.com';
-   });
-   if (heroWhatsApp) heroWhatsApp.addEventListener('click', function(e){
-      e.preventDefault();
-      window.location.href = this.href;
-   });
-} catch (err) {}
