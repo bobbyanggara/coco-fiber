@@ -1729,31 +1729,19 @@ body.img-lightbox-open{overflow:hidden;}
 
 /* =========================================================
    HERO CTA — CLICK FIX (consolidated)
-   Keeps the hero's entrance animation visually, but the hero
-   content itself never becomes non-interactive: nothing above
-   it can eat pointer events, and nothing below load/scroll is
-   required for the buttons to be clickable from frame one.
+   The real cause of the "unclickable until scroll" bug was
+   #fabContact silently stretching full-width (fixed above).
+   Hero entrance animations are back to normal here; we only
+   keep defensive z-index/pointer-events so nothing above the
+   hero CTAs can ever eat clicks again.
    ========================================================= */
-.navbar{ animation:none !important; }
-
-.hero .eyebrow,
-.hero .hero-rotator,
-.hero .hero-lead,
-.hero .hero-actions,
-.hero .hero-stats,
-.hero-inner{
-  animation:none !important;
-  opacity:1 !important;
-  transform:none !important;
-}
-
 .hero-inner,
 .hero-actions,
 .hero-actions .btn{ position:relative; }
 
-.hero-inner{ z-index:10 !important; }
-.hero-actions{ z-index:30 !important; pointer-events:auto !important; }
-.hero-actions .btn{ z-index:31 !important; pointer-events:auto !important; cursor:pointer !important; }
+.hero-inner{ z-index:10; }
+.hero-actions{ z-index:30; pointer-events:auto; }
+.hero-actions .btn{ z-index:31; pointer-events:auto; cursor:pointer; }
 
 /* Decorative/background layers must never receive pointer input. */
 .hero-bg,
@@ -1768,3 +1756,4 @@ body.img-lightbox-open{overflow:hidden;}
 .search-overlay.open,
 .lead-popup-overlay.is-open,
 .img-lightbox-overlay.is-open{ pointer-events:auto !important; }
+
