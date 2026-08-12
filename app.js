@@ -49,6 +49,28 @@ try {
    });
 } catch (err) { /* ignore */ }
 
+// Make the whole article card clickable (not just the thumbnail/link text),
+// while still letting real links inside the card (image, "Baca Selengkapnya")
+// behave normally and letting users select text or open in a new tab.
+try {
+   document.querySelectorAll('.art-card').forEach(card => {
+      const link = card.querySelector('.art-more');
+      if (!link) return;
+
+      card.classList.add('art-card-clickable');
+      card.addEventListener('click', (e) => {
+         if (e.target.closest('a')) return; // real link inside the card: let it work as-is
+         if (window.getSelection().toString()) return; // don't hijack text selection
+
+         if (e.metaKey || e.ctrlKey || e.shiftKey) {
+            window.open(link.href, '_blank');
+         } else {
+            window.location.href = link.href;
+         }
+      });
+   });
+} catch (err) { /* ignore */ }
+
 // Nav active state is static per page (set via class="active" in the HTML,
 // e.g. "Beranda" on index.html, "Artikel" on semua-artikel.html) and no
 // longer tracks scroll position — Home stays highlighted the whole time
