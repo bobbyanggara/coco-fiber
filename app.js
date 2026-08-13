@@ -326,16 +326,23 @@ try {
          // supaya pengunjung tidak terblokir hanya karena masalah jaringan/DB.
          try {
             if (typeof supabaseClient !== 'undefined') {
-               await supabaseClient.from('pesan').insert({
+               const res = await supabaseClient.from('pesan').insert({
                   nama: name,
                   kontak: contact,
                   subjek: subject,
                   pesan: message,
                   status: 'baru'
                });
+               if (res.error) {
+                  // Ditampilkan jelas di console (bukan cuma di-swallow) supaya gampang
+                  // di-debug lewat DevTools > Console kalau pesan tidak muncul di dashboard.
+                  // Penyebab paling umum: tabel `pesan` belum dibuat (jalankan supabase-pesan.sql)
+                  // atau RLS policy insert untuk role `anon` belum aktif.
+                  console.error('[CocoFiber] Gagal menyimpan pesan ke Supabase:', res.error.message, res.error);
+               }
             }
          } catch (err) {
-            console.error('Gagal menyimpan pesan ke Supabase:', err);
+            console.error('[CocoFiber] Gagal menyimpan pesan ke Supabase:', err);
          }
 
          window.open(waUrl, '_blank', 'noopener');
@@ -1244,6 +1251,24 @@ try {
 
          submitBtn.disabled = true;
 
+         // Simpan lead ke Supabase supaya muncul di dashboard admin (tab "Pesan Masuk"),
+         // sama seperti form kontak. Ini jalur utama; Web3Forms di bawah cuma tambahan
+         // opsional kalau kamu mau notifikasi lead ke email juga.
+         try {
+            if (typeof supabaseClient !== 'undefined') {
+               const res = await supabaseClient.from('pesan').insert({
+                  nama: name,
+                  kontak: contact,
+                  subjek: 'Penawaran Gratis (Popup)',
+                  pesan: `Lead dari popup "Dapatkan Penawaran Gratis" di halaman ${location.pathname}.`,
+                  status: 'baru'
+               });
+               if (res.error) console.error('Gagal menyimpan lead popup ke Supabase:', res.error);
+            }
+         } catch (err) {
+            console.error('Gagal menyimpan lead popup ke Supabase:', err);
+         }
+
          try {
             if (WEB3FORMS_ACCESS_KEY && WEB3FORMS_ACCESS_KEY !== 'YOUR-WEB3FORMS-ACCESS-KEY-HERE') {
                await fetch('https://api.web3forms.com/submit', {
@@ -1260,7 +1285,8 @@ try {
                });
             }
          } catch (err) {
-            // Fail silently in the UI; the lead simply won't be delivered.
+            // Web3Forms cuma tambahan opsional; gagal di sini tidak masalah
+            // karena lead sudah tersimpan di Supabase di atas.
          }
 
          formState.hidden = true;
