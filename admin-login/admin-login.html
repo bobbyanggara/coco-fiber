@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Login Admin — CocoFiber.</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --husk-950:#1C1410;
+  --husk-800:#3A2C22;
+  --coir-600:#B5713C;
+  --coir-500:#C6875A;
+  --frond-700:#4A5D45;
+  --kraft-100:#F7F3EC;
+  --kraft-200:#EFE8DA;
+  --card:#FFFFFF;
+  --ink:#241B15;
+  --ink-soft:#6B5D4F;
+  --line:rgba(28,20,16,0.12);
+  --line-strong:rgba(28,20,16,0.2);
+  --danger:#B3452E;
+
+  --radius-sm:8px;
+  --radius:16px;
+  --radius-lg:22px;
+  --shadow-sm:0 2px 8px rgba(28,20,16,0.06);
+  --shadow:0 14px 34px rgba(28,20,16,0.12);
+  --shadow-lg:0 24px 60px rgba(28,20,16,0.22);
+
+  --display:'Fraunces', Georgia, 'Times New Roman', serif;
+  --sans:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --mono:'JetBrains Mono', 'IBM Plex Mono', monospace;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
+html{overflow-x:hidden;width:100%;min-height:100vh;min-height:100dvh;background:var(--kraft-100);}
+
+body{
+  font-family:var(--sans);
+  color:var(--ink);
+  min-height:100vh;
+  min-height:100dvh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:1.5rem;
+  position:relative;
+  overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+  background:
+    radial-gradient(1100px 620px at 12% -10%, rgba(181,113,60,0.16), transparent 60%),
+    radial-gradient(900px 560px at 108% 108%, rgba(74,93,69,0.14), transparent 55%),
+    var(--kraft-100);
+}
+
+/* subtle fiber-texture strokes, purely decorative */
+body::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  opacity:0.5;
+  background-image:
+    repeating-linear-gradient(115deg, rgba(28,20,16,0.025) 0px, rgba(28,20,16,0.025) 1px, transparent 1px, transparent 14px);
+}
+
+a{color:inherit;}
+img{max-width:100%;display:block;}
+:focus-visible{outline:2.5px solid var(--coir-600);outline-offset:3px;border-radius:4px;}
+
+.wrap{
+  position:relative;
+  width:100%;
+  max-width:406px;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:0.6rem;
+  margin-bottom:1.6rem;
+  text-decoration:none;
+  font-family:var(--display);
+  font-weight:600;
+  font-size:1.3rem;
+  color:var(--husk-950);
+}
+.logo-mark{
+  width:34px;height:34px;border-radius:9px;
+  background:var(--coir-600);
+  color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.02rem;
+  box-shadow:0 6px 16px rgba(181,113,60,0.32);
+  flex-shrink:0;
+}
+
+.card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-lg);
+  padding:2.4rem 2.1rem 2rem;
+  position:relative;
+}
+
+.eyebrow{
+  display:inline-flex;align-items:center;gap:0.5rem;
+  font-family:var(--mono);
+  font-size:0.68rem;
+  font-weight:600;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  color:var(--coir-600);
+  margin-bottom:0.6rem;
+}
+.eyebrow::before{content:'';width:16px;height:1.5px;background:var(--coir-600);flex-shrink:0;}
+
+h1{
+  font-family:var(--display);
+  font-weight:600;
+  letter-spacing:-0.01em;
+  font-size:1.62rem;
+  color:var(--husk-950);
+  margin-bottom:0.4rem;
+}
+.sub{
+  color:var(--ink-soft);
+  font-size:0.9rem;
+  margin-bottom:1.8rem;
+  line-height:1.5;
+}
+
+form{display:flex;flex-direction:column;gap:1.05rem;}
+
+.field label{
+  display:block;
+  font-size:0.78rem;
+  font-weight:600;
+  color:var(--husk-800);
+  margin-bottom:0.4rem;
+  letter-spacing:0.01em;
+}
+
+.input-shell{position:relative;}
+
+.input-shell input{
+  width:100%;
+  padding:0.85rem 0.95rem;
+  border:1px solid var(--line);
+  border-radius:10px;
+  font-family:var(--sans);
+  font-size:0.93rem;
+  background:var(--kraft-100);
+  color:var(--ink);
+  transition:border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.input-shell input::placeholder{color:rgba(107,93,79,0.55);}
+.input-shell input:focus{
+  outline:none;
+  border-color:var(--coir-600);
+  box-shadow:0 0 0 3px rgba(181,113,60,0.14);
+}
+.input-shell input.has-icon{padding-right:2.7rem;}
+
+.icon-btn{
+  position:absolute;
+  right:0.6rem;
+  top:50%;
+  transform:translateY(-50%);
+  width:30px;height:30px;
+  border:none;
+  background:transparent;
+  color:var(--ink-soft);
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:7px;
+  transition:background 0.2s ease, color 0.2s ease;
+}
+.icon-btn:hover{background:var(--kraft-200);color:var(--husk-950);}
+.icon-btn svg{width:18px;height:18px;}
+
+.row-between{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  font-size:0.83rem;
+  margin-top:-0.15rem;
+}
+.remember{
+  display:flex;
+  align-items:center;
+  gap:0.5rem;
+  color:var(--ink-soft);
+  cursor:pointer;
+  user-select:none;
+}
+.remember input{
+  width:16px;height:16px;
+  accent-color:var(--coir-600);
+  cursor:pointer;
+}
+.link-muted{
+  color:var(--coir-600);
+  text-decoration:none;
+  font-weight:600;
+}
+.link-muted:hover{text-decoration:underline;}
+
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:0.5rem;
+  width:100%;
+  padding:0.9rem 1.7rem;
+  border-radius:999px;
+  font-family:var(--sans);
+  font-weight:600;font-size:0.95rem;
+  text-decoration:none;
+  border:1.5px solid transparent;
+  transition:transform 0.28s cubic-bezier(.34,1.56,.64,1), box-shadow 0.28s ease, background 0.28s ease, opacity 0.2s ease;
+  cursor:pointer;
+  margin-top:0.3rem;
+}
+.btn-primary{background:var(--coir-600);color:#fff;box-shadow:0 6px 16px rgba(181,113,60,0.28);}
+.btn-primary:hover{background:var(--husk-950);transform:translateY(-2px);box-shadow:0 14px 28px rgba(28,20,16,0.3);}
+.btn-primary:active{transform:translateY(0);}
+.btn-primary:disabled{opacity:0.65;cursor:not-allowed;transform:none;box-shadow:none;}
+
+.btn-primary .spinner{
+  width:16px;height:16px;
+  border:2px solid rgba(255,255,255,0.4);
+  border-top-color:#fff;
+  border-radius:50%;
+  display:none;
+  animation:spin 0.7s linear infinite;
+}
+.btn-primary.loading .spinner{display:inline-block;}
+.btn-primary.loading .btn-label{opacity:0.85;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+.alert{
+  display:none;
+  align-items:flex-start;
+  gap:0.6rem;
+  background:rgba(179,69,46,0.08);
+  border:1px solid rgba(179,69,46,0.3);
+  color:var(--danger);
+  padding:0.75rem 0.9rem;
+  border-radius:10px;
+  font-size:0.83rem;
+  line-height:1.45;
+}
+.alert.show{display:flex;}
+.alert svg{width:16px;height:16px;flex-shrink:0;margin-top:0.1rem;}
+
+.divider-note{
+  text-align:center;
+  font-size:0.76rem;
+  color:var(--ink-soft);
+  margin-top:1.6rem;
+}
+.divider-note a{color:var(--coir-600);font-weight:600;text-decoration:none;}
+.divider-note a:hover{text-decoration:underline;}
+
+.footer-note{
+  text-align:center;
+  margin-top:1.5rem;
+  font-family:var(--mono);
+  font-size:0.7rem;
+  letter-spacing:0.04em;
+  color:var(--ink-soft);
+  opacity:0.75;
+}
+
+@media (max-width:420px){
+  .card{padding:2rem 1.4rem 1.7rem;}
+  h1{font-size:1.42rem;}
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <a href="/" class="brand"><span class="logo-mark">C</span>CocoFiber.</a>
+
+  <div class="card">
+    <span class="eyebrow">Admin Panel</span>
+    <h1>Masuk ke Dashboard</h1>
+    <p class="sub">Khusus untuk tim internal CocoFiber. Masukkan kredensial admin untuk mengelola produk, artikel, dan pesan masuk.</p>
+
+    <div class="alert" id="loginAlert">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span id="loginAlertText">Username atau password salah. Silakan coba lagi.</span>
+    </div>
+
+    <form id="adminLoginForm" novalidate>
+      <div class="field">
+        <label for="username">Username</label>
+        <div class="input-shell">
+          <input type="text" id="username" name="username" placeholder="admin" autocomplete="username" required>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <div class="input-shell">
+          <input type="password" id="password" name="password" placeholder="••••••••" class="has-icon" autocomplete="current-password" required>
+          <button type="button" class="icon-btn" id="togglePassword" aria-label="Tampilkan password">
+            <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="row-between">
+        <label class="remember">
+          <input type="checkbox" id="remember" name="remember">
+          Ingat saya
+        </label>
+        <a href="#" class="link-muted" id="forgotLink">Lupa password?</a>
+      </div>
+
+      <button type="submit" class="btn btn-primary" id="submitBtn">
+        <span class="spinner"></span>
+        <span class="btn-label">Masuk</span>
+      </button>
+    </form>
+
+    <p class="divider-note">Bukan admin? <a href="/">Kembali ke situs utama</a></p>
+  </div>
+
+  <p class="footer-note">COCOFIBER ADMIN · AKSES TERBATAS</p>
+</div>
+
+<script>
+(function(){
+  const form = document.getElementById('adminLoginForm');
+  const submitBtn = document.getElementById('submitBtn');
+  const alertBox = document.getElementById('loginAlert');
+  const alertText = document.getElementById('loginAlertText');
+  const toggleBtn = document.getElementById('togglePassword');
+  const passwordInput = document.getElementById('password');
+  const eyeIcon = document.getElementById('eyeIcon');
+
+  toggleBtn.addEventListener('click', function(){
+    const isPassword = passwordInput.type === 'password';
+    passwordInput.type = isPassword ? 'text' : 'password';
+    toggleBtn.setAttribute('aria-label', isPassword ? 'Sembunyikan password' : 'Tampilkan password');
+    eyeIcon.innerHTML = isPassword
+      ? '<path d="M17.94 17.94A10.94 10.94 0 0112 20c-7 0-11-8-11-8a21.4 21.4 0 015.06-6.06M9.9 4.24A10.94 10.94 0 0112 4c7 0 11 8 11 8a21.4 21.4 0 01-2.68 3.9M14.12 14.12a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>'
+      : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+  });
+
+  function showAlert(message){
+    alertText.textContent = message;
+    alertBox.classList.add('show');
+  }
+  function hideAlert(){
+    alertBox.classList.remove('show');
+  }
+
+  form.addEventListener('submit', async function(e){
+    e.preventDefault();
+    hideAlert();
+
+    const username = document.getElementById('username').value.trim();
+    const password = passwordInput.value;
+
+    if(!username || !password){
+      showAlert('Username dan password wajib diisi.');
+      return;
+    }
+
+    submitBtn.classList.add('loading');
+    submitBtn.disabled = true;
+
+    try{
+      // Ganti URL di bawah ini dengan endpoint API login admin yang sebenarnya
+      // (bisa API di project dashboard admin, diakses via fetch lintas domain/CORS,
+      // atau lewat rewrite di vercel.json jika ingin disamakan domainnya).
+      const res = await fetch('https://ADMIN-DASHBOARD-DOMAIN.vercel.app/api/admin-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: username,
+          password: password,
+          remember: document.getElementById('remember').checked
+        })
+      });
+
+      if(!res.ok){
+        const data = await res.json().catch(function(){ return {}; });
+        showAlert(data.message || 'Username atau password salah. Silakan coba lagi.');
+        submitBtn.classList.remove('loading');
+        submitBtn.disabled = false;
+        return;
+      }
+
+      const data = await res.json();
+      // Sesuaikan dengan cara dashboard admin menyimpan sesi/token,
+      // lalu redirect ke URL dashboard admin yang sebenarnya.
+      if(data.token){
+        localStorage.setItem('cocofiber_admin_token', data.token);
+      }
+      window.location.href = 'https://ADMIN-DASHBOARD-DOMAIN.vercel.app/dashboard';
+
+    }catch(err){
+      showAlert('Tidak dapat terhubung ke server. Periksa koneksi Anda.');
+      submitBtn.classList.remove('loading');
+      submitBtn.disabled = false;
+    }
+  });
+})();
+</script>
+
+</body>
+</html>
