@@ -24,9 +24,19 @@
       if(r.attribute_name) el.setAttribute(r.attribute_name,val);
     });
   }
+  // Deteksi nama halaman dari URL, tahan terhadap Vercel "cleanUrls"
+  // (mis. /produk atau /produk.html sama-sama harus dikenali sebagai 'produk.html',
+  // sesuai nilai kolom `page` yang tersimpan di tabel site_content).
+  function pageKey(){
+    var path = location.pathname.replace(/\/+$/,''); // buang trailing slash
+    var last = path.split('/').pop();
+    if(!last) return 'index.html';
+    if(!/\.[a-z0-9]+$/i.test(last)) last += '.html'; // tidak ada ekstensi -> tambahkan .html
+    return last;
+  }
   async function load(){
     if(typeof supabaseClient==='undefined') return;
-    var page=(location.pathname.split('/').pop()||'index.html');
+    var page=pageKey();
     var r=await supabaseClient.from('site_content').select('*').eq('page',page).eq('status','published').order('sort_order',{ascending:true});
     if(!r.error) {
       apply(r.data||[]);

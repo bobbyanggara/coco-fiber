@@ -5,7 +5,6 @@
 // ==========================================================================
 (async function () {
   var LOGIN_URL = './admin-login.html';
-  var STORAGE_KEY = 'cocofiber_admin_demo_data';
 
   // ---------- Auth guard (Supabase session) ----------
   // Cek session Supabase yang sedang aktif. Kalau tidak ada / expired,
@@ -24,29 +23,33 @@
     }
   });
 
-  // ---------- Data: Pesan masih pakai localStorage (belum digarap) ----------
-  var seedPesan = [
-    { id: 'm1', nama: 'Robert Tan', kontak: '+65 9123 4567', subjek: 'Permintaan Penawaran Coco Fiber', pesan: 'Halo, kami tertarik untuk order coco fiber 2 kontainer per bulan, mohon info harga FOB.', tanggal: '2026-08-12 14:20', status: 'baru' },
-    { id: 'm2', nama: 'Fatima Al-Sayed', kontak: 'fatima@buyerco.ae', subjek: 'Sample Cocopeat', pesan: 'Bisa kirim sample cocopeat 5kg block untuk uji lab kami di Dubai?', tanggal: '2026-08-11 09:05', status: 'baru' },
-    { id: 'm3', nama: 'Budi Hartono', kontak: '0812-3456-7890', subjek: 'Kerjasama Distributor Lokal', pesan: 'Saya ingin jadi distributor cocomesh untuk area Kalimantan, apa syaratnya?', tanggal: '2026-08-09 16:40', status: 'dibaca' },
-    { id: 'm4', nama: 'Lin Wei', kontak: 'linwei@tradeimex.cn', subjek: 'Sertifikasi Ekspor', pesan: 'Mohon dikirimkan dokumen phytosanitary certificate dan COA terbaru.', tanggal: '2026-08-05 11:12', status: 'arsip' }
-  ];
-
-  function loadPesan() {
-    try {
-      var raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) return JSON.parse(raw);
-    } catch (e) {}
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(seedPesan));
-    return JSON.parse(JSON.stringify(seedPesan));
+  // ---------- Supabase: Pesan (dikirim dari form kontak situs) ----------
+  async function fetchPesan() {
+    var res = await supabaseClient
+      .from('pesan')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (res.error) {
+      console.error('Gagal memuat pesan:', res.error);
+      showToast('Gagal memuat pesan masuk. Jalankan supabase-pesan.sql.');
+      return [];
+    }
+    // Samakan bentuk data dengan yang dipakai renderPesan() (field `tanggal`).
+    return res.data.map(function (m) {
+      return {
+        id: m.id,
+        nama: m.nama,
+        kontak: m.kontak,
+        subjek: m.subjek || '(Tanpa subjek)',
+        pesan: m.pesan,
+        status: m.status,
+        tanggal: m.created_at ? new Date(m.created_at).toLocaleString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : ''
+      };
+    });
   }
-  function savePesan(pesan) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(pesan));
-  }
 
-  // data.produk & data.artikel diisi dari Supabase lewat fetchProduk()/fetchArtikel().
-  // data.pesan masih dari localStorage untuk sementara.
-  var data = { produk: [], artikel: [], konten: [], pesan: loadPesan() };
+  // data.produk, data.artikel & data.pesan diisi dari Supabase.
+  var data = { produk: [], artikel: [], konten: [], pesan: [] };
 
   // ---------- Helper: bikin slug dari nama/judul ----------
   function toSlug(str) {
@@ -616,23 +619,31 @@
   document.getElementById('artikelModalCancel').addEventListener('click', closeArtikelModal);
 
   // ---------- Pesan actions ----------
-  // CATATAN: Pesan masuk masih pakai localStorage (belum digarap, sesuai
-  // rencana — akan diganti ke Supabase saat fitur form kontak dibuat).
-  pesanList.addEventListener('click', function (e) {
+  pesanList.addEventListener('click', async function (e) {
     var markId = e.target.getAttribute('data-mark-pesan');
     var delId = e.target.getAttribute('data-delete-pesan');
     if (markId) {
       var status = e.target.getAttribute('data-status');
-      var m = data.pesan.find(function (x) { return x.id === markId; });
-      if (m) m.status = status;
-      savePesan(data.pesan);
+      var res = await supabaseClient.from('pesan').update({ status: status }).eq('id', markId);
+      if (res.error) {
+        console.error(res.error);
+        showToast('Gagal memperbarui status pesan: ' + res.error.message);
+        return;
+      }
+      data.pesan = await fetchPesan();
       renderPesan();
       renderOverview();
       showToast('Status pesan diperbarui.');
     }
     if (delId) {
-      data.pesan = data.pesan.filter(function (m) { return m.id !== delId; });
-      savePesan(data.pesan);
+      if (!confirm('Yakin ingin menghapus pesan ini?')) return;
+      var resDel = await supabaseClient.from('pesan').delete().eq('id', delId);
+      if (resDel.error) {
+        console.error(resDel.error);
+        showToast('Gagal menghapus pesan: ' + resDel.error.message);
+        return;
+      }
+      data.pesan = await fetchPesan();
       renderPesan();
       renderOverview();
       showToast('Pesan dihapus.');
@@ -674,6 +685,7 @@
   data.produk = await fetchProduk();
   data.artikel = await fetchArtikel();
   data.konten = await fetchKonten();
+  data.pesan = await fetchPesan();
   renderAll();
   var initial = window.location.hash.replace('#', '');
   goToSection(sections.indexOf(initial) !== -1 ? initial : 'overview');

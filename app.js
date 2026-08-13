@@ -297,7 +297,7 @@ try {
    };
 
    if (contactForm) {
-      contactForm.addEventListener('submit', (e) => {
+      contactForm.addEventListener('submit', async (e) => {
          e.preventDefault();
          const btn = contactForm.querySelector('.btn');
 
@@ -320,6 +320,23 @@ try {
 
          btn.textContent = submitLabels.sending[currentLang];
          btn.disabled = true;
+
+         // Simpan pesan ke Supabase supaya muncul di dashboard admin (tab "Pesan Masuk").
+         // Kalau gagal (mis. offline), form tetap lanjut buka WhatsApp seperti biasa
+         // supaya pengunjung tidak terblokir hanya karena masalah jaringan/DB.
+         try {
+            if (typeof supabaseClient !== 'undefined') {
+               await supabaseClient.from('pesan').insert({
+                  nama: name,
+                  kontak: contact,
+                  subjek: subject,
+                  pesan: message,
+                  status: 'baru'
+               });
+            }
+         } catch (err) {
+            console.error('Gagal menyimpan pesan ke Supabase:', err);
+         }
 
          window.open(waUrl, '_blank', 'noopener');
 
