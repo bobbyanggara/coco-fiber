@@ -41,6 +41,7 @@ create table artikel (
   ringkasan_en text,
   konten text,                            -- isi artikel, HTML atau markdown
   konten_en text,
+  faq jsonb default '[]'::jsonb,          -- array of {pertanyaan, pertanyaan_en, jawaban, jawaban_en}
   kategori text,
   gambar_url text,
   penulis text,

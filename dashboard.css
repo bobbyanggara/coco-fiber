@@ -373,3 +373,12 @@ table.data-table{width:100%;border-collapse:collapse;font-size:0.87rem;}
 
 .repeater-row.fitur{grid-template-columns:1fr 1fr auto;}
 .repeater-row.lead{grid-template-columns:1fr 1fr 1fr 1fr auto;}
+
+.faq-editor-list{display:flex;flex-direction:column;gap:.75rem;margin-bottom:.6rem;}
+.faq-editor-item{border:1px solid var(--line);border-radius:10px;padding:.65rem;background:var(--surface-soft,#faf9f6);}
+.faq-editor-item .faq-editor-q-row{display:grid;grid-template-columns:1fr 1fr auto;gap:.55rem;}
+.faq-editor-item .faq-editor-a-row{display:grid;grid-template-columns:1fr 1fr;gap:.55rem;margin-top:.5rem;}
+.faq-editor-item textarea.plain-input{resize:vertical;min-height:52px;}
+@media (max-width:640px){
+  .faq-editor-item .faq-editor-q-row,.faq-editor-item .faq-editor-a-row{grid-template-columns:1fr;}
+}

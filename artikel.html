@@ -58,6 +58,8 @@
 <img alt="" id="articleImage" src="" style="width:100%;max-height:520px;object-fit:cover;border-radius:18px;display:none;"/>
 </div>
 <article id="articleContent" style="max-width:900px;margin:0 auto;line-height:1.9;font-size:1.02rem;"></article>
+<div id="articleFaq" style="max-width:900px;margin:0 auto;"></div>
+<div id="articleCta" style="max-width:900px;margin:0 auto;"></div>
 </section>
 <footer class="footer">
 <div class="footer-grid">
@@ -125,6 +127,42 @@
     var img=document.getElementById('articleImage');
     if(a.gambar_url){img.src=a.gambar_url;img.alt=title;img.style.display='block';}
     document.getElementById('articleContent').innerHTML=content||'<p>Isi artikel belum tersedia.</p>';
+    renderFaq(a.faq);
+    renderCta();
+  }
+  function renderFaq(faq){
+    var wrap=document.getElementById('articleFaq');
+    var list=[];
+    if(Array.isArray(faq)) list=faq; else if(typeof faq==='string'){ try{ list=JSON.parse(faq)||[]; }catch(e){ list=[]; } }
+    list=list.filter(function(f){ return f && (f.pertanyaan||f.pertanyaan_en); });
+    if(!list.length){ wrap.innerHTML=''; return; }
+    var heading=pick('Pertanyaan yang Sering Diajukan','Frequently Asked Questions');
+    var items=list.map(function(f){
+      var q=esc(pick(f.pertanyaan,f.pertanyaan_en));
+      var ans=esc(pick(f.jawaban,f.jawaban_en));
+      return '<div class="faq-item">'+
+        '<h3><button type="button" class="faq-trigger" aria-expanded="false">'+
+          '<span class="faq-trigger-text">'+q+'</span>'+
+          '<span class="faq-trigger-icon"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>'+
+        '</button></h3>'+
+        '<div class="faq-panel"><div><p>'+ans+'</p></div></div>'+
+      '</div>';
+    }).join('');
+    wrap.innerHTML='<div class="article-faq"><h2>'+esc(heading)+'</h2>'+items+'</div>';
+    wrap.querySelectorAll('.faq-item').forEach(function(item){
+      var trigger=item.querySelector('.faq-trigger');
+      trigger.addEventListener('click',function(){
+        var isOpen=item.classList.toggle('is-open');
+        trigger.setAttribute('aria-expanded',String(isOpen));
+      });
+    });
+  }
+  function renderCta(){
+    var wrap=document.getElementById('articleCta');
+    var text=esc(pick('Tertarik dengan produk ini untuk bisnis Anda?','Interested in this product for your business?'));
+    var label=esc(pick('Chat WhatsApp','Chat on WhatsApp'));
+    wrap.innerHTML='<div class="article-cta"><p>'+text+'</p>'+
+      '<a class="btn btn-primary" href="https://wa.me/6285257930183" target="_blank" rel="noopener">'+label+'</a></div>';
   }
   document.addEventListener('DOMContentLoaded',load);
   var ls=document.getElementById('langSwitch'); if(ls) ls.addEventListener('click',function(){setTimeout(load,20)});

@@ -127,6 +127,27 @@
     await insertMissing('site_content', 'key', seed.site_content, 'konten frontend');
     await insertMissing('produk', 'slug', seed.products, 'produk');
     await insertMissing('artikel', 'slug', seed.articles, 'artikel');
+
+    // Isi kolom `faq` untuk artikel lama yang sudah ada di Supabase sebelum
+    // kolom FAQ ditambahkan, tapi FAQ-nya masih kosong. Artikel yang FAQ-nya
+    // sudah pernah diisi/diubah lewat dashboard TIDAK disentuh.
+    await backfillArtikelFaq(seed.articles);
+  }
+
+  async function backfillArtikelFaq(seedArticles) {
+    if (!seedArticles || !seedArticles.length) return;
+    var existing = await supabaseClient.from('artikel').select('id,slug,faq');
+    if (existing.error) return; // kolom faq mungkin belum dibuat; abaikan diam-diam
+    var bySlug = {};
+    (existing.data || []).forEach(function (r) { bySlug[r.slug] = r; });
+    for (var i = 0; i < seedArticles.length; i++) {
+      var seedArt = seedArticles[i];
+      var row = bySlug[seedArt.slug];
+      var isEmpty = row && (!row.faq || (Array.isArray(row.faq) && row.faq.length === 0));
+      if (row && isEmpty && seedArt.faq && seedArt.faq.length) {
+        await supabaseClient.from('artikel').update({ faq: seedArt.faq }).eq('id', row.id);
+      }
+    }
   }
 
   // ---------- Sidebar nav / routing ----------
@@ -523,6 +544,45 @@
 
   document.querySelectorAll('.rich-toolbar button').forEach(function(btn){btn.addEventListener('click',function(){var cmd=btn.getAttribute('data-cmd'),value=btn.getAttribute('data-value')||null;document.execCommand(cmd,false,value);});});
 
+  // ---------- Modal: Artikel FAQ repeater ----------
+  var artikelFaqList = document.getElementById('artikelFaqList');
+  function addFaqRow(faq) {
+    faq = faq || {};
+    var item = document.createElement('div');
+    item.className = 'faq-editor-item';
+    item.innerHTML =
+      '<div class="faq-editor-q-row">' +
+        '<input class="plain-input faq-q" placeholder="Pertanyaan (Indonesia)">' +
+        '<input class="plain-input faq-q-en" placeholder="Question (English)">' +
+        '<button type="button" class="btn btn-danger btn-xs faq-remove">Hapus</button>' +
+      '</div>' +
+      '<div class="faq-editor-a-row">' +
+        '<textarea class="plain-input faq-a" rows="2" placeholder="Jawaban (Indonesia)"></textarea>' +
+        '<textarea class="plain-input faq-a-en" rows="2" placeholder="Answer (English)"></textarea>' +
+      '</div>';
+    item.querySelector('.faq-q').value = faq.pertanyaan || '';
+    item.querySelector('.faq-q-en').value = faq.pertanyaan_en || '';
+    item.querySelector('.faq-a').value = faq.jawaban || '';
+    item.querySelector('.faq-a-en').value = faq.jawaban_en || '';
+    item.querySelector('.faq-remove').addEventListener('click', function () { item.remove(); });
+    artikelFaqList.appendChild(item);
+  }
+  function renderFaqEditor(faqArr) {
+    artikelFaqList.innerHTML = '';
+    (Array.isArray(faqArr) ? faqArr : []).forEach(function (f) { addFaqRow(f); });
+  }
+  function collectFaqEditor() {
+    return Array.from(artikelFaqList.querySelectorAll('.faq-editor-item')).map(function (item) {
+      return {
+        pertanyaan: item.querySelector('.faq-q').value.trim(),
+        pertanyaan_en: item.querySelector('.faq-q-en').value.trim(),
+        jawaban: item.querySelector('.faq-a').value.trim(),
+        jawaban_en: item.querySelector('.faq-a-en').value.trim()
+      };
+    }).filter(function (f) { return f.pertanyaan || f.jawaban; });
+  }
+  document.getElementById('artikelFaqAdd').addEventListener('click', function () { addFaqRow(); });
+
   // ---------- Modal: Artikel ----------
   var artikelModal = document.getElementById('artikelModal');
   var artikelForm = document.getElementById('artikelForm');
@@ -530,6 +590,7 @@
     var editing = id ? data.artikel.find(function (a) { return a.id === id; }) : null;
     document.getElementById('artikelModalTitle').textContent = editing ? 'Ubah Artikel' : 'Tulis Artikel';
     artikelForm.reset();
+    renderFaqEditor(editing ? editing.faq : []);
     document.getElementById('artikelId').value = editing ? editing.id : '';
     if (editing) {
       document.getElementById('artikelJudul').value = editing.judul || '';
@@ -561,6 +622,7 @@
       penulis: document.getElementById('artikelPenulis').value.trim(),
       konten: document.getElementById('artikelKonten').innerHTML.trim(),
       konten_en: document.getElementById('artikelKontenEn').innerHTML.trim(),
+      faq: collectFaqEditor(),
       status: document.getElementById('artikelStatus').value
     };
     if (!payload.judul) return;
