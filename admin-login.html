@@ -15,89 +15,109 @@
 </head>
 <body>
 
-<div class="login-shell">
+<div class="stage">
 
-  <!-- Panel kiri — branding -->
-  <aside class="brand-panel">
-    <div class="brand-panel-glow"></div>
-    <div class="brand-panel-inner">
-      <a href="/" class="brand brand-on-dark"><span class="logo-mark">C</span>CocoFiber.</a>
+  <div class="login-shell">
 
-      <div class="brand-panel-body">
-        <span class="eyebrow eyebrow-on-dark">Admin Panel</span>
-        <h2>Satu dashboard untuk seluruh operasional website CocoFiber.</h2>
-        <p>Kelola katalog produk, publikasikan artikel, dan pantau setiap pesan masuk dari calon pelanggan &mdash; semuanya real-time, tanpa perlu sentuh kode.</p>
-
-        <ul class="brand-features">
-          <li>
-            <span class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span>
-            <span>Kelola produk &amp; katalog ekspor</span>
-          </li>
-          <li>
-            <span class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg></span>
-            <span>Tulis &amp; publikasikan artikel</span>
-          </li>
-          <li>
-            <span class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg></span>
-            <span>Pantau pesan masuk pelanggan</span>
-          </li>
-        </ul>
+    <!-- Panel kiri — visual bertema coco fiber -->
+    <aside class="hero-panel">
+      <div class="hero-art" aria-hidden="true">
+        <svg viewBox="0 0 520 640" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0 430 C 90 380, 160 400, 230 350 C 300 300, 340 340, 420 300 C 470 275, 500 285, 520 270 L520 640 L0 640 Z" fill="url(#hillA)"/>
+          <path d="M0 480 C 100 440, 190 470, 270 420 C 350 370, 400 410, 520 370 L520 640 L0 640 Z" fill="url(#hillB)"/>
+          <path d="M0 540 C 120 505, 220 530, 310 495 C 390 465, 450 495, 520 470 L520 640 L0 640 Z" fill="url(#hillC)"/>
+          <g stroke="rgba(247,243,236,0.16)" stroke-width="1.5" fill="none">
+            <path d="M60 130 C 40 90, 55 40, 95 10"/>
+            <path d="M60 130 C 20 105, -10 65, -15 20"/>
+            <path d="M60 130 C 75 85, 120 55, 165 45"/>
+            <path d="M60 130 C 95 100, 145 95, 185 115"/>
+          </g>
+          <defs>
+            <lineargradient id="hillA" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#4A5D45"/>
+              <stop offset="1" stop-color="#2F3C2B"/>
+            </lineargradient>
+            <lineargradient id="hillB" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#3A2C22"/>
+              <stop offset="1" stop-color="#241B15"/>
+            </lineargradient>
+            <lineargradient id="hillC" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#1C1410"/>
+              <stop offset="1" stop-color="#120C09"/>
+            </lineargradient>
+          </defs>
+        </svg>
       </div>
+      <div class="hero-scrim"></div>
+      <div class="hero-grain" aria-hidden="true"></div>
 
-      <p class="brand-panel-footer">COCOFIBER ADMIN &middot; AKSES TERBATAS TIM INTERNAL</p>
-    </div>
-  </aside>
+      <div class="hero-content">
+        <a href="/" class="brand brand-on-dark"><span class="logo-mark">C</span>CocoFiber.</a>
 
-  <!-- Panel kanan — form -->
-  <main class="form-panel">
-    <div class="form-panel-inner">
-
-      <a href="/" class="brand brand-mobile-only"><span class="logo-mark">C</span>CocoFiber.</a>
-
-      <div class="form-head">
-        <span class="eyebrow">Masuk</span>
-        <h1>Selamat datang kembali</h1>
-        <p class="sub">Masukkan kredensial admin untuk melanjutkan ke dashboard.</p>
+        <div class="hero-copy">
+          <h2>Halo,<br>selamat<br>datang.</h2>
+          <p>Kelola produk, artikel, dan pesan masuk situs CocoFiber dari satu dashboard.</p>
+          <a href="/" class="pill-btn">Lihat situs utama</a>
+        </div>
       </div>
+    </aside>
 
-      <div class="alert alert-danger" id="loginAlert">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        <span id="loginAlertText">Email atau password salah. Silakan coba lagi.</span>
-      </div>
+    <!-- Panel kanan — form -->
+    <main class="form-panel">
+      <div class="form-panel-inner">
 
-      <form id="adminLoginForm" novalidate>
-        <div class="field">
-          <label for="username">Email</label>
-          <div class="input-shell">
-            <input type="email" id="username" name="username" placeholder="admin@cocofiber.com" autocomplete="username" required>
-          </div>
+        <div class="form-head">
+          <span class="eyebrow">Admin Panel</span>
+          <h1>Masuk ke Dashboard</h1>
         </div>
 
-        <div class="field">
-          <label for="password">Password</label>
-          <div class="input-shell">
-            <input type="password" id="password" name="password" placeholder="••••••••" class="has-icon" autocomplete="current-password" required>
-            <button type="button" class="icon-btn" id="togglePassword" aria-label="Tampilkan password">
-              <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            </button>
-          </div>
+        <div class="alert alert-danger" id="loginAlert">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span id="loginAlertText">Email atau password salah. Silakan coba lagi.</span>
         </div>
 
-        <label class="remember">
-          <input type="checkbox" id="remember" name="remember">
-          Ingat saya di perangkat ini
-        </label>
+        <form id="adminLoginForm" novalidate>
+          <div class="field">
+            <label for="username">Email</label>
+            <div class="input-shell icon-input">
+              <span class="input-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z" opacity="0"/><path d="M4 6h16v12H4z"/><path d="M4 7l8 6 8-6"/></svg>
+              </span>
+              <input type="email" id="username" name="username" placeholder="admin@cocofiber.com" autocomplete="username" required>
+            </div>
+          </div>
 
-        <button type="submit" class="btn btn-primary btn-block" id="submitBtn">
-          <span class="spinner"></span>
-          <span class="btn-label">Masuk ke Dashboard</span>
-        </button>
-      </form>
+          <div class="field">
+            <label for="password">Password</label>
+            <div class="input-shell icon-input">
+              <span class="input-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/></svg>
+              </span>
+              <input type="password" id="password" name="password" placeholder="••••••••" class="has-icon" autocomplete="current-password" required>
+              <button type="button" class="icon-btn" id="togglePassword" aria-label="Tampilkan password">
+                <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
 
-      <p class="divider-note">Bukan admin? <a href="/">Kembali ke situs utama</a></p>
-    </div>
-  </main>
+          <label class="remember">
+            <input type="checkbox" id="remember" name="remember">
+            Ingat saya di perangkat ini
+          </label>
 
+          <button type="submit" class="btn btn-primary btn-block" id="submitBtn">
+            <span class="spinner"></span>
+            <span class="btn-label">Masuk</span>
+          </button>
+        </form>
+
+        <p class="help-note">Lupa kredensial atau butuh akses? <a href="https://wa.me/6285257930183" target="_blank" rel="noopener">Hubungi tim IT</a></p>
+      </div>
+    </main>
+
+  </div>
+
+  <p class="stage-footer">COCOFIBER ADMIN &middot; AKSES TERBATAS TIM INTERNAL</p>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
