@@ -10,7 +10,7 @@
   /* ---- Core palette (named, not generic) ---- */
   --husk-950:#1C1410;      /* near-black coffee-brown: text, dark surfaces */
   --husk-800:#3A2C22;      /* lighter brown: secondary dark surface */
-  --coir-600:#B5713C;      /* terracotta coir fiber: primary accent */
+  --coir-600:#8A562E;      /* terracotta coir fiber: primary accent (WCAG AA text-contrast safe on kraft/white) */
   --coir-500:#C6875A;      /* lighter coir: hover states */
   --frond-700:#4A5D45;     /* olive frond green: secondary accent, used sparingly */
   --kraft-100:#F7F3EC;     /* warm kraft paper: page background */
