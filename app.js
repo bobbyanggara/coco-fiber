@@ -279,7 +279,7 @@ try {
 // and opens it in the WhatsApp API (wa.me) so it's ready to send to our team.
 try {
    const contactForm = document.getElementById('contactForm');
-   const WHATSAPP_NUMBER = '6285257930183'; // no "+", no leading zero
+   const WHATSAPP_NUMBER = '6285385548442'; // no "+", no leading zero
 
    const waMessageTemplates = {
       id: (name, contact, subject, message) =>

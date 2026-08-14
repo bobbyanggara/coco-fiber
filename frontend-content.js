@@ -58,7 +58,7 @@
       (p.deskripsi || p.deskripsi_en ? '<p class="p-card-desc">' + esc(pick(p.deskripsi,p.deskripsi_en)) + '</p>' : '') +
       featureHtml + quickHtml +
       '<div class="p-card-actions"><a href="kontak.html" class="btn btn-primary btn-sm">' + (lang()==='en'?'Get Quotation':'Dapatkan Penawaran') + '</a>' +
-      '<a href="https://wa.me/6285257930183?text=' + wa + '" target="_blank" rel="noopener" class="btn btn-whatsapp btn-sm">WhatsApp</a></div>' +
+      '<a href="https://wa.me/6285385548442?text=' + wa + '" target="_blank" rel="noopener" class="btn btn-whatsapp btn-sm">WhatsApp</a></div>' +
       (leadHtml || specHtml ? '<div class="p-card-details">' + leadHtml + specHtml + '</div>' : '') +
       '</div></article>';
   }
