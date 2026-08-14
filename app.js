@@ -404,22 +404,56 @@ try {
    }
 })();
 
-// Mobile only: product cards stack vertically and only the first one shows
-// by default. Tapping "Lihat Produk Selengkapnya" reveals the rest in place.
+// Mobile only: product cards stack vertically.
+// - Beranda (index.html): only the first N cards show by default; tapping
+//   "Lihat Produk Selengkapnya" reveals the rest in place.
+// - Halaman Produk (produk.html): every card shows right away, no limit.
+// Product cards are rendered asynchronously from Supabase (see
+// frontend-content.js), so this re-applies itself whenever the track's
+// content changes rather than running once on load.
 (function initProductShowMore() {
    const btn = document.getElementById('productShowMore');
    const track = document.getElementById('productTrack');
    if (!btn || !track) return;
 
-   const revealAll = () => {
-      track.querySelectorAll('.p-card.is-hidden-mobile').forEach(card => {
-         card.classList.remove('is-hidden-mobile');
-      });
-      btn.setAttribute('aria-expanded', 'true');
+   // Halaman Produk (produk.html) menampilkan semua produk di mobile — tidak
+   // butuh tombol "Lihat Produk Selengkapnya" atau pembatasan kartu.
+   const isProductsPage = document.body.classList.contains('products-page')
+      || /(^|\/)produk\.html$/.test(location.pathname);
+   const MOBILE_VISIBLE_COUNT = 2;
+
+   if (isProductsPage) {
       btn.style.display = 'none';
+      btn.setAttribute('aria-expanded', 'true');
+      return;
+   }
+
+   let expanded = false;
+
+   const applyLimit = () => {
+      const cards = Array.from(track.querySelectorAll('.p-card'));
+      if (!cards.length) return;
+      cards.forEach((card, i) => {
+         card.classList.toggle('is-hidden-mobile', !expanded && i >= MOBILE_VISIBLE_COUNT);
+      });
+      btn.style.display = (expanded || cards.length <= MOBILE_VISIBLE_COUNT) ? 'none' : '';
+      if (cards.length <= MOBILE_VISIBLE_COUNT) btn.setAttribute('aria-expanded', 'true');
+   };
+
+   const revealAll = () => {
+      expanded = true;
+      applyLimit();
+      btn.setAttribute('aria-expanded', 'true');
    };
 
    btn.addEventListener('click', revealAll);
+
+   // Re-apply every time productTrack's content is (re)rendered — e.g. after
+   // the async Supabase fetch resolves, or when the language toggle re-renders.
+   const observer = new MutationObserver(() => applyLimit());
+   observer.observe(track, { childList: true });
+
+   applyLimit();
 
    // If arriving via a direct link to a specific product card (e.g. footer link
    // to #product-cocopeat), reveal all cards first so the target isn't hidden,
