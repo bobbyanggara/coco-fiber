@@ -66,8 +66,8 @@
       <div class="admin-chip">
         <div class="admin-avatar">A</div>
         <div>
-          <strong>Admin CocoFiber</strong>
-          <small>admin@cocofiber.id</small>
+          <strong id="sidebarAdminName">Admin CocoFiber</strong>
+          <small id="sidebarAdminEmail">admin@cocofiber.id</small>
         </div>
       </div>
     </div>
@@ -88,7 +88,7 @@
         <div class="topbar-user">
           <button class="topbar-user-btn" id="userMenuBtn" aria-haspopup="true" aria-expanded="false">
             <div class="admin-avatar">A</div>
-            <span class="topbar-user-name">Admin CocoFiber</span>
+            <span class="topbar-user-name" id="topbarUserName">Admin CocoFiber</span>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
           <div class="topbar-user-menu" id="userMenu">
@@ -168,6 +168,7 @@
               <p>Produk yang tampil di halaman Produk situs</p>
             </div>
             <div class="panel-actions">
+              <button class="btn btn-ghost btn-sm" id="templateProdukBtn">Gunakan Template</button>
               <button class="btn btn-primary btn-sm" id="addProdukBtn">+ Tambah Produk</button>
             </div>
           </div>
@@ -206,6 +207,7 @@
               <p>Artikel yang tampil di halaman Artikel situs</p>
             </div>
             <div class="panel-actions">
+              <button class="btn btn-ghost btn-sm" id="templateArtikelBtn">Gunakan Template</button>
               <button class="btn btn-primary btn-sm" id="addArtikelBtn">+ Tulis Artikel</button>
             </div>
           </div>
@@ -282,31 +284,48 @@
           <div class="panel-head">
             <div>
               <h3>Profil Admin</h3>
-              <p>Perbarui informasi akun dan kata sandi</p>
+              <p>Perbarui nama, email, dan kata sandi akun ini</p>
             </div>
           </div>
           <div class="panel-body">
-            <form id="settingsForm" style="display:flex;flex-direction:column;gap:1rem;max-width:420px;">
+            <div class="alert alert-danger" id="settingsAlert">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <span id="settingsAlertText"></span>
+            </div>
+            <form id="settingsForm" style="display:flex;flex-direction:column;gap:1.3rem;max-width:460px;">
               <div class="field">
                 <label for="settingsName">Nama</label>
-                <div class="input-shell"><input type="text" id="settingsName" class="plain-input" value="Admin CocoFiber"></div>
+                <div class="input-shell"><input type="text" id="settingsName" class="plain-input" placeholder="Nama admin" autocomplete="name"></div>
               </div>
               <div class="field">
                 <label for="settingsEmail">Email</label>
-                <div class="input-shell"><input type="email" id="settingsEmail" class="plain-input" value="admin@cocofiber.id"></div>
+                <div class="input-shell"><input type="email" id="settingsEmail" class="plain-input" autocomplete="email"></div>
+                <p class="field-hint">Mengubah email akan mengirim tautan konfirmasi ke alamat baru. Email lama tetap aktif sampai konfirmasi selesai.</p>
+              </div>
+
+              <div class="settings-divider">
+                <span>Ubah Password (opsional)</span>
+              </div>
+
+              <div class="field">
+                <label for="settingsCurrentPass">Password Saat Ini</label>
+                <div class="input-shell"><input type="password" id="settingsCurrentPass" class="plain-input" placeholder="Wajib diisi untuk mengubah email/password" autocomplete="current-password"></div>
               </div>
               <div class="field-row">
                 <div class="field">
                   <label for="settingsNewPass">Password Baru</label>
-                  <div class="input-shell"><input type="password" id="settingsNewPass" class="plain-input" placeholder="••••••••"></div>
+                  <div class="input-shell"><input type="password" id="settingsNewPass" class="plain-input" placeholder="Min. 8 karakter" autocomplete="new-password"></div>
                 </div>
                 <div class="field">
                   <label for="settingsConfirmPass">Konfirmasi Password</label>
-                  <div class="input-shell"><input type="password" id="settingsConfirmPass" class="plain-input" placeholder="••••••••"></div>
+                  <div class="input-shell"><input type="password" id="settingsConfirmPass" class="plain-input" placeholder="••••••••" autocomplete="new-password"></div>
                 </div>
               </div>
               <div>
-                <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                <button type="submit" class="btn btn-primary" id="settingsSubmitBtn">
+                  <span class="spinner"></span>
+                  <span class="btn-label">Simpan Perubahan</span>
+                </button>
               </div>
             </form>
           </div>
@@ -361,7 +380,26 @@
         <div class="field"><label for="produkPackaging">Kemasan & Pengiriman</label><div class="input-shell"><input type="text" id="produkPackaging" class="plain-input"></div></div>
         <div class="field"><label for="produkPayment">Pembayaran</label><div class="input-shell"><input type="text" id="produkPayment" class="plain-input"></div></div>
       </div>
-      <div class="field"><label for="produkGambar">URL Gambar</label><div class="input-shell"><input type="text" id="produkGambar" class="plain-input" placeholder="images/nama-file.webp atau URL"></div></div>
+      <div class="field">
+        <label>Gambar Produk</label>
+        <div class="image-upload-box" id="produkImageBox">
+          <input type="file" id="produkImageFile" accept="image/*" hidden>
+          <div class="image-upload-preview" id="produkImagePreview">
+            <img id="produkImagePreviewImg" alt="" hidden>
+            <span class="image-upload-empty" id="produkImageEmptyState">Belum ada gambar</span>
+          </div>
+          <div class="image-upload-actions">
+            <button type="button" class="btn btn-ghost btn-sm" id="produkImagePickBtn">Pilih Gambar</button>
+            <button type="button" class="btn btn-ghost btn-sm btn-danger-text" id="produkImageRemoveBtn" hidden>Hapus</button>
+            <span class="image-upload-status" id="produkImageStatus"></span>
+          </div>
+          <p class="field-hint">Seret &amp; lepas gambar, atau klik &ldquo;Pilih Gambar&rdquo;. JPG/PNG/WebP, maks 5MB.</p>
+          <details class="image-url-fallback">
+            <summary>Atau isi URL gambar manual</summary>
+            <div class="input-shell"><input type="text" id="produkGambar" class="plain-input" placeholder="images/nama-file.webp atau URL"></div>
+          </details>
+        </div>
+      </div>
       <div class="field repeater-field">
         <div class="field-heading"><label>Fitur Produk</label><button type="button" class="btn btn-ghost btn-xs" data-add-row="fitur">+ Tambah</button></div>
         <div id="produkFiturRows" class="repeater-list"></div>
@@ -431,8 +469,24 @@
         <div class="input-shell"><input type="text" id="artikelKategori" class="plain-input" placeholder="Cth. Ekspor, Industri, Produksi"></div>
       </div>
       <div class="field">
-        <label for="artikelGambar">URL Gambar</label>
-        <div class="input-shell"><input type="text" id="artikelGambar" class="plain-input" placeholder="images/nama-file.webp atau URL"></div>
+        <label>Gambar Artikel</label>
+        <div class="image-upload-box" id="artikelImageBox">
+          <input type="file" id="artikelImageFile" accept="image/*" hidden>
+          <div class="image-upload-preview" id="artikelImagePreview">
+            <img id="artikelImagePreviewImg" alt="" hidden>
+            <span class="image-upload-empty" id="artikelImageEmptyState">Belum ada gambar</span>
+          </div>
+          <div class="image-upload-actions">
+            <button type="button" class="btn btn-ghost btn-sm" id="artikelImagePickBtn">Pilih Gambar</button>
+            <button type="button" class="btn btn-ghost btn-sm btn-danger-text" id="artikelImageRemoveBtn" hidden>Hapus</button>
+            <span class="image-upload-status" id="artikelImageStatus"></span>
+          </div>
+          <p class="field-hint">Seret &amp; lepas gambar, atau klik &ldquo;Pilih Gambar&rdquo;. JPG/PNG/WebP, maks 5MB.</p>
+          <details class="image-url-fallback">
+            <summary>Atau isi URL gambar manual</summary>
+            <div class="input-shell"><input type="text" id="artikelGambar" class="plain-input" placeholder="images/nama-file.webp atau URL"></div>
+          </details>
+        </div>
       </div>
       <div class="field">
         <label for="artikelPenulis">Penulis</label>

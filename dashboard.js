@@ -225,6 +225,96 @@
     }, 2600);
   }
 
+  // ---------- Upload gambar ke Supabase Storage (bucket "konten") ----------
+  // Dipakai oleh form Produk & Artikel supaya admin tinggal pilih file dari
+  // laptop, tidak perlu upload manual ke tempat lain lalu tempel link.
+  var IMAGE_BUCKET = 'konten';
+
+  function setImagePreview(prefix, url) {
+    var img = document.getElementById(prefix + 'ImagePreviewImg');
+    var empty = document.getElementById(prefix + 'ImageEmptyState');
+    var removeBtn = document.getElementById(prefix + 'ImageRemoveBtn');
+    if (!img) return;
+    if (url) {
+      img.src = url;
+      img.hidden = false;
+      if (empty) empty.hidden = true;
+      if (removeBtn) removeBtn.hidden = false;
+    } else {
+      img.hidden = true;
+      img.src = '';
+      if (empty) empty.hidden = false;
+      if (removeBtn) removeBtn.hidden = true;
+    }
+  }
+
+  async function uploadImageFile(prefix, file) {
+    var statusEl = document.getElementById(prefix + 'ImageStatus');
+    var urlInput = document.getElementById(prefix + 'Gambar');
+    if (!file) return;
+    if (!/^image\//.test(file.type)) { showToast('File harus berupa gambar (JPG/PNG/WebP).'); return; }
+    if (file.size > 5 * 1024 * 1024) { showToast('Ukuran gambar maksimal 5MB.'); return; }
+
+    if (statusEl) statusEl.textContent = 'Mengunggah...';
+
+    var ext = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg';
+    var path = prefix + '/' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.' + ext;
+
+    var up = await supabaseClient.storage.from(IMAGE_BUCKET).upload(path, file, {
+      cacheControl: '3600',
+      upsert: false
+    });
+
+    if (up.error) {
+      console.error('Gagal upload gambar:', up.error);
+      if (statusEl) statusEl.textContent = '';
+      showToast('Gagal upload gambar: ' + up.error.message + '. Pastikan bucket "konten" sudah dibuat (jalankan supabase-storage-gambar.sql).');
+      return;
+    }
+
+    var pub = supabaseClient.storage.from(IMAGE_BUCKET).getPublicUrl(path);
+    var publicUrl = pub && pub.data ? pub.data.publicUrl : '';
+    urlInput.value = publicUrl;
+    setImagePreview(prefix, publicUrl);
+    if (statusEl) statusEl.textContent = 'Gambar terunggah.';
+    setTimeout(function () { if (statusEl) statusEl.textContent = ''; }, 2200);
+  }
+
+  function setupImageUpload(prefix) {
+    var box = document.getElementById(prefix + 'ImageBox');
+    var fileInput = document.getElementById(prefix + 'ImageFile');
+    var pickBtn = document.getElementById(prefix + 'ImagePickBtn');
+    var removeBtn = document.getElementById(prefix + 'ImageRemoveBtn');
+    var urlInput = document.getElementById(prefix + 'Gambar');
+    if (!box || !fileInput) return;
+
+    pickBtn.addEventListener('click', function () { fileInput.click(); });
+    fileInput.addEventListener('change', function () {
+      if (fileInput.files && fileInput.files[0]) uploadImageFile(prefix, fileInput.files[0]);
+      fileInput.value = '';
+    });
+    removeBtn.addEventListener('click', function () {
+      urlInput.value = '';
+      setImagePreview(prefix, '');
+    });
+    // Update pratinjau kalau admin isi URL manual lewat kolom fallback.
+    urlInput.addEventListener('change', function () { setImagePreview(prefix, urlInput.value.trim()); });
+
+    // Drag & drop
+    ['dragenter', 'dragover'].forEach(function (evt) {
+      box.addEventListener(evt, function (e) { e.preventDefault(); e.stopPropagation(); box.classList.add('drag-over'); });
+    });
+    ['dragleave', 'drop'].forEach(function (evt) {
+      box.addEventListener(evt, function (e) { e.preventDefault(); e.stopPropagation(); box.classList.remove('drag-over'); });
+    });
+    box.addEventListener('drop', function (e) {
+      var file = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+      if (file) uploadImageFile(prefix, file);
+    });
+  }
+  setupImageUpload('produk');
+  setupImageUpload('artikel');
+
   // ---------- Overview ----------
   function renderOverview() {
     document.getElementById('statProduk').textContent = data.produk.length;
@@ -317,6 +407,7 @@
           '<td data-label="Status"><span class="badge ' + (p.status === 'published' ? 'badge-new' : 'badge-pending') + '">' + (p.status === 'published' ? 'Tayang' : 'Draft') + '</span></td>' +
           '<td class="cell-actions-td"><div class="cell-actions">' +
             '<button class="btn btn-ghost btn-sm" data-edit-produk="' + p.id + '">Ubah</button>' +
+            '<button class="btn btn-ghost btn-sm" data-duplicate-produk="' + p.id + '">Duplikat</button>' +
             '<button class="btn btn-danger btn-sm" data-delete-produk="' + p.id + '">Hapus</button>' +
           '</div></td>' +
         '</tr>';
@@ -385,6 +476,7 @@
           '<td data-label="Tanggal">' + a.tanggal + '</td>' +
           '<td class="cell-actions-td"><div class="cell-actions">' +
             '<button class="btn btn-ghost btn-sm" data-edit-artikel="' + a.id + '">Ubah</button>' +
+            '<button class="btn btn-ghost btn-sm" data-duplicate-artikel="' + a.id + '">Duplikat</button>' +
             '<button class="btn btn-danger btn-sm" data-delete-artikel="' + a.id + '">Hapus</button>' +
           '</div></td>' +
         '</tr>';
@@ -534,10 +626,12 @@
       return {label_id:row.querySelector('.rep-label-id').value.trim(),label_en:row.querySelector('.rep-label-en').value.trim(),value:row.querySelector('.rep-value').value.trim(),value_en:row.querySelector('.rep-value-en').value.trim()};
     }).filter(function(x){return Object.keys(x).some(function(k){return x[k];});});
   }
-  async function openProdukModal(id) {
+  async function openProdukModal(id, opts) {
+    opts = opts || {};
+    var isDuplicate = !!opts.duplicate;
     var editing = id ? data.produk.find(function (p) { return p.id === id; }) : null;
 
-    // Selalu ambil data terbaru dari Supabase saat tombol Ubah diklik.
+    // Selalu ambil data terbaru dari Supabase saat tombol Ubah/Duplikat diklik.
     if (id) {
       var fresh = await supabaseClient.from('produk').select('*').eq('id', id).maybeSingle();
       if (fresh.error) {
@@ -547,18 +641,20 @@
       }
       if (fresh.data) {
         editing = fresh.data;
-        var idx = data.produk.findIndex(function (p) { return p.id === id; });
-        if (idx >= 0) data.produk[idx] = fresh.data;
-        else data.produk.push(fresh.data);
+        if (!isDuplicate) {
+          var idx = data.produk.findIndex(function (p) { return p.id === id; });
+          if (idx >= 0) data.produk[idx] = fresh.data;
+          else data.produk.push(fresh.data);
+        }
       }
     }
 
-    document.getElementById('produkModalTitle').textContent = editing ? 'Ubah Produk' : 'Tambah Produk';
+    document.getElementById('produkModalTitle').textContent = isDuplicate ? 'Produk Baru dari Template' : (editing ? 'Ubah Produk' : 'Tambah Produk');
     produkForm.reset();
-    document.getElementById('produkId').value = editing ? editing.id : '';
+    document.getElementById('produkId').value = (editing && !isDuplicate) ? editing.id : '';
     fillRepeaters(editing||{});
     if (editing) {
-      document.getElementById('produkNama').value = editing.nama || '';
+      document.getElementById('produkNama').value = isDuplicate ? (editing.nama ? editing.nama + ' (Salinan)' : '') : (editing.nama || '');
       document.getElementById('produkKategori').value = editing.kategori || '';
       document.getElementById('produkHarga').value = editing.harga || '';
       document.getElementById('produkStok').value = editing.supply_ability || '';
@@ -567,9 +663,10 @@
       document.getElementById('produkPackaging').value = editing.packaging || '';
       document.getElementById('produkPayment').value = editing.payment_terms || '';
       document.getElementById('produkGambar').value = editing.gambar_url || '';
-      document.getElementById('produkUrutan').value = editing.urutan || 0;
-      document.getElementById('produkStatus').value = editing.status;
+      document.getElementById('produkUrutan').value = isDuplicate ? 0 : (editing.urutan || 0);
+      document.getElementById('produkStatus').value = isDuplicate ? 'draft' : editing.status;
     }
+    setImagePreview('produk', document.getElementById('produkGambar').value);
     produkModal.classList.add('show');
   }
   function closeProdukModal() { produkModal.classList.remove('show'); }
@@ -630,13 +727,27 @@
 
   produkTableBody.addEventListener('click', async function (e) {
     var editId = e.target.getAttribute('data-edit-produk');
+    var dupId = e.target.getAttribute('data-duplicate-produk');
     var delId = e.target.getAttribute('data-delete-produk');
     if (editId) openProdukModal(editId);
+    if (dupId) openProdukModal(dupId, { duplicate: true });
     if (delId) { if (!confirm('Yakin ingin menghapus produk ini?')) return; var res = await supabaseClient.from('produk').delete().eq('id', delId); if (res.error) { showToast('Gagal menghapus produk: ' + res.error.message); return; } data.produk = await fetchProduk(); renderProduk(); renderOverview(); showToast('Produk dihapus.'); }
   });
   document.getElementById('addProdukBtn').addEventListener('click', function () { openProdukModal(null); });
   document.getElementById('produkModalClose').addEventListener('click', closeProdukModal);
   document.getElementById('produkModalCancel').addEventListener('click', closeProdukModal);
+
+  // "Gunakan Template" di atas tabel: pilih dari daftar produk yang sudah ada
+  // untuk dijadikan dasar produk baru (tanpa harus scroll cari tombol Duplikat).
+  document.getElementById('templateProdukBtn').addEventListener('click', function () {
+    if (!data.produk.length) { showToast('Belum ada produk yang bisa dijadikan template.'); return; }
+    var pilihan = data.produk.map(function (p, i) { return (i + 1) + '. ' + p.nama; }).join('\n');
+    var input = prompt('Pilih nomor produk yang mau dijadikan template:\n\n' + pilihan);
+    if (!input) return;
+    var idx = parseInt(input, 10) - 1;
+    if (isNaN(idx) || !data.produk[idx]) { showToast('Nomor tidak valid.'); return; }
+    openProdukModal(data.produk[idx].id, { duplicate: true });
+  });
 
   document.querySelectorAll('.rich-toolbar button').forEach(function(btn){btn.addEventListener('click',function(){var cmd=btn.getAttribute('data-cmd'),value=btn.getAttribute('data-value')||null;document.execCommand(cmd,false,value);});});
 
@@ -682,14 +793,16 @@
   // ---------- Modal: Artikel ----------
   var artikelModal = document.getElementById('artikelModal');
   var artikelForm = document.getElementById('artikelForm');
-  function openArtikelModal(id) {
+  function openArtikelModal(id, opts) {
+    opts = opts || {};
+    var isDuplicate = !!opts.duplicate;
     var editing = id ? data.artikel.find(function (a) { return a.id === id; }) : null;
-    document.getElementById('artikelModalTitle').textContent = editing ? 'Ubah Artikel' : 'Tulis Artikel';
+    document.getElementById('artikelModalTitle').textContent = isDuplicate ? 'Artikel Baru dari Template' : (editing ? 'Ubah Artikel' : 'Tulis Artikel');
     artikelForm.reset();
     renderFaqEditor(editing ? editing.faq : []);
-    document.getElementById('artikelId').value = editing ? editing.id : '';
+    document.getElementById('artikelId').value = (editing && !isDuplicate) ? editing.id : '';
     if (editing) {
-      document.getElementById('artikelJudul').value = editing.judul || '';
+      document.getElementById('artikelJudul').value = isDuplicate ? (editing.judul ? editing.judul + ' (Salinan)' : '') : (editing.judul || '');
       document.getElementById('artikelJudulEn').value = editing.judul_en || '';
       document.getElementById('artikelRingkasan').value = editing.ringkasan || '';
       document.getElementById('artikelRingkasanEn').value = editing.ringkasan_en || '';
@@ -698,8 +811,9 @@
       document.getElementById('artikelPenulis').value = editing.penulis || '';
       document.getElementById('artikelKonten').innerHTML = editing.konten || '';
       document.getElementById('artikelKontenEn').innerHTML = editing.konten_en || '';
-      document.getElementById('artikelStatus').value = editing.status;
+      document.getElementById('artikelStatus').value = isDuplicate ? 'draft' : editing.status;
     }
+    setImagePreview('artikel', document.getElementById('artikelGambar').value);
     artikelModal.classList.add('show');
   }
   function closeArtikelModal() { artikelModal.classList.remove('show'); }
@@ -755,8 +869,10 @@
 
   artikelTableBody.addEventListener('click', async function (e) {
     var editId = e.target.getAttribute('data-edit-artikel');
+    var dupId = e.target.getAttribute('data-duplicate-artikel');
     var delId = e.target.getAttribute('data-delete-artikel');
     if (editId) openArtikelModal(editId);
+    if (dupId) openArtikelModal(dupId, { duplicate: true });
     if (delId) {
       if (!confirm('Yakin ingin menghapus artikel ini?')) return;
       var res = await supabaseClient.from('artikel').delete().eq('id', delId);
@@ -775,6 +891,17 @@
   document.getElementById('addArtikelBtn').addEventListener('click', function () { openArtikelModal(null); });
   document.getElementById('artikelModalClose').addEventListener('click', closeArtikelModal);
   document.getElementById('artikelModalCancel').addEventListener('click', closeArtikelModal);
+
+  // "Gunakan Template": pilih artikel lama untuk dijadikan dasar artikel baru.
+  document.getElementById('templateArtikelBtn').addEventListener('click', function () {
+    if (!data.artikel.length) { showToast('Belum ada artikel yang bisa dijadikan template.'); return; }
+    var pilihan = data.artikel.map(function (a, i) { return (i + 1) + '. ' + a.judul; }).join('\n');
+    var input = prompt('Pilih nomor artikel yang mau dijadikan template:\n\n' + pilihan);
+    if (!input) return;
+    var idx = parseInt(input, 10) - 1;
+    if (isNaN(idx) || !data.artikel[idx]) { showToast('Nomor tidak valid.'); return; }
+    openArtikelModal(data.artikel[idx].id, { duplicate: true });
+  });
 
   // ---------- Pesan actions ----------
   pesanList.addEventListener('click', async function (e) {
@@ -808,11 +935,127 @@
     }
   });
 
-  // ---------- Pengaturan ----------
-  document.getElementById('settingsForm').addEventListener('submit', function (e) {
+  // ---------- Pengaturan (profil, email, password — tersambung ke Supabase Auth) ----------
+  var currentUser = sessionRes.data.session.user;
+  var settingsForm = document.getElementById('settingsForm');
+  var settingsNameInput = document.getElementById('settingsName');
+  var settingsEmailInput = document.getElementById('settingsEmail');
+  var settingsCurrentPassInput = document.getElementById('settingsCurrentPass');
+  var settingsNewPassInput = document.getElementById('settingsNewPass');
+  var settingsConfirmPassInput = document.getElementById('settingsConfirmPass');
+  var settingsAlert = document.getElementById('settingsAlert');
+  var settingsAlertText = document.getElementById('settingsAlertText');
+  var settingsSubmitBtn = document.getElementById('settingsSubmitBtn');
+
+  function displayName(user) {
+    return (user.user_metadata && user.user_metadata.full_name) || 'Admin CocoFiber';
+  }
+  function applyIdentityToChrome(user) {
+    var name = displayName(user);
+    setText('sidebarAdminName', name);
+    setText('sidebarAdminEmail', user.email || '');
+    setText('topbarUserName', name);
+    document.querySelectorAll('.admin-avatar').forEach(function (el) {
+      el.textContent = (name.trim().charAt(0) || 'A').toUpperCase();
+    });
+  }
+  function fillSettingsForm(user) {
+    settingsNameInput.value = displayName(user);
+    settingsEmailInput.value = user.email || '';
+  }
+  fillSettingsForm(currentUser);
+  applyIdentityToChrome(currentUser);
+
+  function showSettingsAlert(msg) {
+    settingsAlertText.textContent = msg;
+    settingsAlert.classList.add('show');
+  }
+  function hideSettingsAlert() {
+    settingsAlert.classList.remove('show');
+  }
+  function setSettingsLoading(isLoading) {
+    settingsSubmitBtn.classList.toggle('loading', isLoading);
+    settingsSubmitBtn.disabled = isLoading;
+  }
+
+  settingsForm.addEventListener('submit', async function (e) {
     e.preventDefault();
-    // TODO: API — kirim perubahan profil admin ke backend kamu.
-    showToast('Pengaturan disimpan.');
+    hideSettingsAlert();
+
+    var name = settingsNameInput.value.trim();
+    var newEmail = settingsEmailInput.value.trim();
+    var currentPass = settingsCurrentPassInput.value;
+    var newPass = settingsNewPassInput.value;
+    var confirmPass = settingsConfirmPassInput.value;
+
+    var emailChanged = newEmail && newEmail.toLowerCase() !== (currentUser.email || '').toLowerCase();
+    var wantsPasswordChange = !!(newPass || confirmPass);
+
+    if (!newEmail) {
+      showSettingsAlert('Email tidak boleh kosong.');
+      return;
+    }
+
+    if (wantsPasswordChange) {
+      if (newPass.length < 8) {
+        showSettingsAlert('Password baru minimal 8 karakter.');
+        return;
+      }
+      if (newPass !== confirmPass) {
+        showSettingsAlert('Konfirmasi password tidak cocok.');
+        return;
+      }
+    }
+
+    // Perubahan email/password adalah aksi sensitif — minta password saat ini
+    // untuk memverifikasi ulang identitas sebelum mengubahnya (defense in depth,
+    // supaya sesi yang lupa logout di perangkat lain tidak bisa langsung
+    // mengambil alih akun hanya dengan mengubah email/password).
+    if ((emailChanged || wantsPasswordChange) && !currentPass) {
+      showSettingsAlert('Masukkan password saat ini untuk mengubah email atau password.');
+      return;
+    }
+
+    setSettingsLoading(true);
+
+    if ((emailChanged || wantsPasswordChange) && currentPass) {
+      var reauth = await supabaseClient.auth.signInWithPassword({
+        email: currentUser.email,
+        password: currentPass
+      });
+      if (reauth.error) {
+        showSettingsAlert('Password saat ini salah.');
+        setSettingsLoading(false);
+        return;
+      }
+    }
+
+    var payload = { data: { full_name: name } };
+    if (emailChanged) payload.email = newEmail;
+    if (wantsPasswordChange) payload.password = newPass;
+
+    var result = await supabaseClient.auth.updateUser(payload);
+
+    setSettingsLoading(false);
+
+    if (result.error) {
+      showSettingsAlert(result.error.message || 'Gagal menyimpan perubahan.');
+      return;
+    }
+
+    currentUser = result.data.user || currentUser;
+    settingsCurrentPassInput.value = '';
+    settingsNewPassInput.value = '';
+    settingsConfirmPassInput.value = '';
+    applyIdentityToChrome(currentUser);
+
+    if (emailChanged) {
+      showToast('Perubahan disimpan. Cek email baru untuk konfirmasi alamat email.');
+    } else if (wantsPasswordChange) {
+      showToast('Password berhasil diperbarui.');
+    } else {
+      showToast('Profil berhasil diperbarui.');
+    }
   });
 
   // ---------- Logout ----------
