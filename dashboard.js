@@ -398,6 +398,7 @@
   }
   setupImageUpload('produk');
   setupImageUpload('artikel');
+  setupImageUpload('artikel2');
 
   // ---------- Overview ----------
   function renderOverview() {
@@ -993,12 +994,14 @@
       document.getElementById('artikelRingkasanEn').value = editing.ringkasan_en || '';
       document.getElementById('artikelKategori').value = editing.kategori || '';
       document.getElementById('artikelGambar').value = editing.gambar_url || '';
+      document.getElementById('artikel2Gambar').value = editing.gambar_url_2 || '';
       document.getElementById('artikelPenulis').value = editing.penulis || '';
       document.getElementById('artikelKonten').innerHTML = editing.konten || '';
       document.getElementById('artikelKontenEn').innerHTML = editing.konten_en || '';
       document.getElementById('artikelStatus').value = isDuplicate ? 'draft' : editing.status;
     }
     setImagePreview('artikel', document.getElementById('artikelGambar').value);
+    setImagePreview('artikel2', document.getElementById('artikel2Gambar').value);
     artikelModal.classList.add('show');
   }
   function closeArtikelModal() { artikelModal.classList.remove('show'); }
@@ -1014,6 +1017,7 @@
       ringkasan_en: document.getElementById('artikelRingkasanEn').value.trim(),
       kategori: document.getElementById('artikelKategori').value.trim(),
       gambar_url: document.getElementById('artikelGambar').value.trim(),
+      gambar_url_2: document.getElementById('artikel2Gambar').value.trim(),
       penulis: document.getElementById('artikelPenulis').value.trim(),
       konten: document.getElementById('artikelKonten').innerHTML.trim(),
       konten_en: document.getElementById('artikelKontenEn').innerHTML.trim(),

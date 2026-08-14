@@ -489,6 +489,26 @@
         </div>
       </div>
       <div class="field">
+        <label>Gambar Kedua (tampil di tengah isi artikel)</label>
+        <div class="image-upload-box" id="artikel2ImageBox">
+          <input type="file" id="artikel2ImageFile" accept="image/*" hidden>
+          <div class="image-upload-preview" id="artikel2ImagePreview">
+            <img id="artikel2ImagePreviewImg" alt="" hidden>
+            <span class="image-upload-empty" id="artikel2ImageEmptyState">Belum ada gambar</span>
+          </div>
+          <div class="image-upload-actions">
+            <button type="button" class="btn btn-ghost btn-sm" id="artikel2ImagePickBtn">Pilih Gambar</button>
+            <button type="button" class="btn btn-ghost btn-sm btn-danger-text" id="artikel2ImageRemoveBtn" hidden>Hapus</button>
+            <span class="image-upload-status" id="artikel2ImageStatus"></span>
+          </div>
+          <p class="field-hint">Seret &amp; lepas gambar, atau klik &ldquo;Pilih Gambar&rdquo;. JPG/PNG/WebP, maks 5MB. Gambar ini tampil di tengah halaman artikel, terpisah dari gambar utama di atas.</p>
+          <details class="image-url-fallback">
+            <summary>Atau isi URL gambar manual</summary>
+            <div class="input-shell"><input type="text" id="artikel2Gambar" class="plain-input" placeholder="images/nama-file.webp atau URL"></div>
+          </details>
+        </div>
+      </div>
+      <div class="field">
         <label for="artikelPenulis">Penulis</label>
         <div class="input-shell"><input type="text" id="artikelPenulis" class="plain-input"></div>
       </div>

@@ -58,6 +58,9 @@
 <img alt="" id="articleImage" src="" style="width:100%;max-height:520px;object-fit:cover;border-radius:18px;display:none;"/>
 </div>
 <article id="articleContent" style="max-width:900px;margin:0 auto;line-height:1.9;font-size:1.02rem;"></article>
+<div id="articleImage2Wrap" style="max-width:900px;margin:2.5rem auto;">
+<img alt="" id="articleImage2" src="" style="width:100%;max-height:480px;object-fit:cover;border-radius:18px;display:none;"/>
+</div>
 <div id="articleFaq" style="max-width:900px;margin:0 auto;"></div>
 <div id="articleCta" style="max-width:900px;margin:0 auto;"></div>
 </section>
@@ -127,6 +130,8 @@
     var img=document.getElementById('articleImage');
     if(a.gambar_url){img.src=a.gambar_url;img.alt=title;img.style.display='block';}
     document.getElementById('articleContent').innerHTML=content||'<p>Isi artikel belum tersedia.</p>';
+    var img2=document.getElementById('articleImage2');
+    if(a.gambar_url_2){img2.src=a.gambar_url_2;img2.alt=title;img2.style.display='block';}
     renderFaq(a.faq);
     renderCta();
   }
