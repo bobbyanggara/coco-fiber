@@ -6,6 +6,11 @@
    Mobile-first. Every rule below the base layer is a min-width override.
    ========================================================================== */
 
+.sr-only{
+  position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+  overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;
+}
+
 :root{
   /* ---- Core palette (named, not generic) ---- */
   --husk-950:#1C1410;      /* near-black coffee-brown: text, dark surfaces */
@@ -611,10 +616,10 @@ h1,h2,h3{font-family:var(--display);color:var(--husk-950);font-weight:600;letter
 .btn-sm{padding:0.6rem 1.05rem;font-size:0.83rem;}
 .btn-whatsapp{
   display:inline-flex;align-items:center;gap:0.45rem;
-  background:#25D366;color:#fff;border-radius:999px;
+  background:#075E54;color:#fff;border-radius:999px;
   text-decoration:none;font-weight:600;
 }
-.btn-whatsapp:hover{background:#1fb959;}
+.btn-whatsapp:hover{background:#054c44;}
 .btn-whatsapp svg{width:15px;height:15px;}
 
 /* Simple 4-tile quickspecs strip */
@@ -1141,7 +1146,7 @@ h1,h2,h3{font-family:var(--display);color:var(--husk-950);font-weight:600;letter
 .footer-social a:hover{background:var(--coir-600);}
 .footer-social svg{width:16px;height:16px;}
 
-.footer-col h4{
+.footer-col h3{
   color:#fff;font-size:0.96rem;font-weight:700;
   margin-bottom:1.05rem;letter-spacing:0.02em;
 }

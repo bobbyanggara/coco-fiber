@@ -55,6 +55,7 @@
 </div>
 </div>
 </header>
+<main>
 <!-- Hero -->
 <section class="hero" id="home">
 <div aria-hidden="true" class="hero-bg" id="heroBg"></div>
@@ -234,9 +235,12 @@
 <div class="c-item"><span class="c-item-icon"><svg fill="currentColor" viewbox="0 0 24 24"><path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 11.36 11.36 0 003.55.57 1 1 0 011 1V20a1 1 0 01-1 1C10.61 21 3 13.39 3 4a1 1 0 011-1h3.5a1 1 0 011 1 11.36 11.36 0 00.57 3.55 1 1 0 01-.25 1.02l-2.2 2.2z"></path></svg></span><div><strong data-cms-key="index__S117">WhatsApp</strong><small>+62 852-5793-0183</small></div></div>
 </div>
 <form class="contact-form" id="contactForm">
+<label class="sr-only" for="cfName" data-cms-key="index__063b" data-en="Full Name">Nama Lengkap</label>
 <input data-cms-key-placeholder="index__063" data-en-placeholder="Full Name" id="cfName" name="name" placeholder="Nama Lengkap" required="" type="text"/>
 <div class="form-row">
+<label class="sr-only" for="cfContact" data-cms-key="index__064b" data-en="WhatsApp Number or Email">No. WhatsApp atau Email</label>
 <input data-cms-key-placeholder="index__064" data-en-placeholder="WhatsApp Number or Email" id="cfContact" name="contact" placeholder="No. WhatsApp atau Email" required="" type="text"/>
+<label class="sr-only" for="cfSubject" data-cms-key="index__065b" data-en="Select Subject">Pilih Subjek</label>
 <select id="cfSubject" name="subject" required="">
 <option data-cms-key="index__065" data-en="Select Subject" disabled="" selected="" value="">Pilih Subjek</option>
 <option data-cms-key="index__066" data-en="Request a Quotation" value="Permintaan Penawaran">Permintaan Penawaran</option>
@@ -245,6 +249,7 @@
 <option data-cms-key="index__069" data-en="Other" value="Lainnya">Lainnya</option>
 </select>
 </div>
+<label class="sr-only" for="cfMessage" data-cms-key="index__070b" data-en="Your Comment or Message">Pesan / Komentar Anda</label>
 <textarea data-cms-key-placeholder="index__070" data-en-placeholder="Your Comment or Message" id="cfMessage" name="message" placeholder="Pesan / Komentar Anda" required="" rows="3"></textarea>
 <button class="btn btn-primary" data-cms-key="index__071" data-en="Send via WhatsApp" type="submit">Kirim via WhatsApp</button>
 <p class="contact-form-note" data-cms-key="index__072" data-en="Your message will open in WhatsApp, ready to send to our team.">Pesan Anda akan terbuka di WhatsApp, siap dikirim ke tim kami.</p>
@@ -252,6 +257,7 @@
 </div>
 </section>
 <!-- Footer -->
+</main>
 <footer class="footer">
 <div class="footer-grid">
 <div class="footer-brand">
@@ -264,7 +270,7 @@
 </div>
 </div>
 <div class="footer-col">
-<h4 data-cms-key="index__074" data-en="Our Products">Produk Kami</h4>
+<h3 data-cms-key="index__074" data-en="Our Products">Produk Kami</h3>
 <ul class="footer-links">
 <li><a data-cms-key="index__075" data-en="Coco Fiber" href="produk.html#product-coco-fiber">Coco Fiber</a></li>
 <li><a data-cms-key="index__076" data-en="Cocopeat" href="produk.html#product-cocopeat">Cocopeat</a></li>
@@ -272,7 +278,7 @@
 </ul>
 </div>
 <div class="footer-col">
-<h4 data-cms-key="index__078" data-en="PT Apa Saja Indonesia">PT Apa Saja Indonesia</h4>
+<h3 data-cms-key="index__078" data-en="PT Apa Saja Indonesia">PT Apa Saja Indonesia</h3>
 <ul class="footer-contact-list">
 <li>
 <svg fill="currentColor" viewbox="0 0 24 24"><path d="M12 2C8.14 2 5 5.14 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.86-3.14-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"></path></svg>
@@ -339,7 +345,7 @@
 <button class="ai-suggestion-chip" data-cms-key="index__090" data-en="Do you export?" data-q-en="Do you ship internationally?" data-q-id="Apakah bisa ekspor ke luar negeri?" type="button">Bisa ekspor?</button>
 </div>
 <form class="ai-chat-input-row" id="aiChatForm">
-<input autocomplete="off" data-cms-key-placeholder="index__091" data-en-placeholder="Type your question..." id="aiChatInput" placeholder="Tulis pertanyaan Anda..." type="text"/>
+<input autocomplete="off" data-cms-key-placeholder="index__091" data-en-placeholder="Type your question..." id="aiChatInput" placeholder="Tulis pertanyaan Anda..." aria-label="Tulis pertanyaan Anda" type="text"/>
 <button aria-label="Kirim" class="ai-chat-send" id="aiChatSend" type="submit">
 <svg fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"></path></svg>
 </button>
@@ -350,7 +356,7 @@
 <div aria-label="Cari di situs" aria-modal="true" class="search-panel" role="dialog">
 <div class="search-input-row">
 <svg aria-hidden="true" class="search-input-icon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.3-4.3"></path></svg>
-<input autocomplete="off" class="search-input" data-cms-key-placeholder="index__092" data-en-placeholder="Search products, articles, or anything else..." id="searchInput" placeholder="Cari produk, artikel, atau info lainnya..." spellcheck="false" type="text"/>
+<input autocomplete="off" class="search-input" data-cms-key-placeholder="index__092" data-en-placeholder="Search products, articles, or anything else..." id="searchInput" placeholder="Cari produk, artikel, atau info lainnya..." aria-label="Cari" spellcheck="false" type="text"/>
 <button aria-label="Tutup" class="search-close" data-cms-key-aria-label="index__093" data-en-aria="Close" id="searchClose" type="button">
 <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"></path></svg>
 </button>
@@ -377,8 +383,8 @@
 <h3 data-cms-key="index__100" data-en="Get a Free Price Quote Today" id="leadPopupTitle">Dapatkan Penawaran Harga Gratis Hari Ini</h3>
 <p class="lead-popup-desc" data-cms-key="index__101" data-en="Register now and receive our best FOB price for Coco Fiber &amp; Cocopeat delivered to your port.">Daftar sekarang dan dapatkan harga FOB terbaik untuk Coco Fiber &amp; Cocopeat sampai ke pelabuhan Anda.</p>
 <form id="leadPopupForm">
-<input data-cms-key-placeholder="index__102" data-en-placeholder="Your Name" id="lpName" name="name" placeholder="Nama Anda" required="" type="text"/>
-<input data-cms-key-placeholder="index__103" data-en-placeholder="Phone Number or Email" id="lpContact" name="contact" placeholder="Nomor WhatsApp atau Email" required="" type="text"/>
+<input data-cms-key-placeholder="index__102" data-en-placeholder="Your Name" id="lpName" name="name" placeholder="Nama Anda" aria-label="Nama Anda" required="" type="text"/>
+<input data-cms-key-placeholder="index__103" data-en-placeholder="Phone Number or Email" id="lpContact" name="contact" placeholder="Nomor WhatsApp atau Email" aria-label="Nomor WhatsApp atau Email" required="" type="text"/>
 <button class="btn btn-primary lead-popup-submit" id="leadPopupSubmit" type="submit">
 <span data-cms-key="index__104" data-en="Get Free Quote">Dapatkan Penawaran Gratis</span> <span aria-hidden="true" data-cms-key="index__S124">→</span>
 </button>
