@@ -554,10 +554,16 @@
       return;
     }
     artikelTableBody.innerHTML = rows.map(function (a) {
+      var beranda = a.tampil_beranda !== false; // default true kalau kolom belum pernah diisi
       return '' +
         '<tr>' +
           '<td data-label="Judul"><span class="cell-title">' + escapeHtml(a.judul) + '</span><span class="cell-sub">' + escapeHtml(a.kategori || '') + ' · ' + a.tanggal + '</span></td>' +
           '<td data-label="Status"><span class="badge ' + (a.status === 'published' ? 'badge-new' : 'badge-pending') + '">' + (a.status === 'published' ? 'Tayang' : 'Draft') + '</span></td>' +
+          '<td data-label="Beranda"><button type="button" class="beranda-toggle" data-toggle-beranda="' + a.id + '" data-current="' + (beranda ? '1' : '0') + '" title="' + (beranda ? 'Tampil di Beranda — klik untuk sembunyikan' : 'Tidak tampil di Beranda — klik untuk tampilkan') + '">' +
+            (beranda ?
+              '<svg viewBox="0 0 36 20" fill="none"><rect x="0.5" y="0.5" width="35" height="19" rx="9.5" fill="var(--success,#4A5D45)" stroke="var(--success,#4A5D45)"/><circle cx="26" cy="10" r="7.5" fill="#fff"/></svg>' :
+              '<svg viewBox="0 0 36 20" fill="none"><rect x="0.5" y="0.5" width="35" height="19" rx="9.5" fill="var(--line,#ddd)" stroke="var(--line-strong,#ccc)"/><circle cx="10" cy="10" r="7.5" fill="#fff"/></svg>') +
+          '</button></td>' +
           '<td data-label="Tanggal">' + a.tanggal + '</td>' +
           '<td class="cell-actions-td"><div class="cell-actions">' +
             '<button class="btn btn-ghost btn-sm" data-edit-artikel="' + a.id + '">Ubah</button>' +
@@ -999,6 +1005,9 @@
       document.getElementById('artikelKonten').innerHTML = editing.konten || '';
       document.getElementById('artikelKontenEn').innerHTML = editing.konten_en || '';
       document.getElementById('artikelStatus').value = isDuplicate ? 'draft' : editing.status;
+      document.getElementById('artikelTampilBeranda').checked = editing.tampil_beranda !== false;
+    } else {
+      document.getElementById('artikelTampilBeranda').checked = true;
     }
     setImagePreview('artikel', document.getElementById('artikelGambar').value);
     setImagePreview('artikel2', document.getElementById('artikel2Gambar').value);
@@ -1022,7 +1031,8 @@
       konten: document.getElementById('artikelKonten').innerHTML.trim(),
       konten_en: document.getElementById('artikelKontenEn').innerHTML.trim(),
       faq: collectFaqEditor(),
-      status: document.getElementById('artikelStatus').value
+      status: document.getElementById('artikelStatus').value,
+      tampil_beranda: document.getElementById('artikelTampilBeranda').checked
     };
     if (!payload.judul) return;
 
@@ -1060,6 +1070,23 @@
     var editId = e.target.getAttribute('data-edit-artikel');
     var dupId = e.target.getAttribute('data-duplicate-artikel');
     var delId = e.target.getAttribute('data-delete-artikel');
+    var berandaBtn = e.target.closest('[data-toggle-beranda]');
+    if (berandaBtn) {
+      var bId = berandaBtn.getAttribute('data-toggle-beranda');
+      var nextVal = berandaBtn.getAttribute('data-current') !== '1';
+      berandaBtn.disabled = true;
+      var resB = await supabaseClient.from('artikel').update({ tampil_beranda: nextVal }).eq('id', bId);
+      berandaBtn.disabled = false;
+      if (resB.error) {
+        console.error(resB.error);
+        showToast('Gagal mengubah status Beranda: ' + resB.error.message);
+        return;
+      }
+      data.artikel = await fetchArtikel();
+      renderArtikel();
+      showToast(nextVal ? 'Artikel ditampilkan di Beranda.' : 'Artikel disembunyikan dari Beranda.');
+      return;
+    }
     if (editId) openArtikelModal(editId);
     if (dupId) openArtikelModal(dupId, { duplicate: true });
     if (delId) {

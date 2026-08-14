@@ -80,8 +80,10 @@
     if (r.error) { console.error(r.error); return []; }
     return r.data || [];
   }
-  async function getArticles(limit) {
-    var q = supabaseClient.from('artikel').select('*').eq('status','published').order('tanggal',{ascending:false});
+  async function getArticles(limit, featuredOnly) {
+    var q = supabaseClient.from('artikel').select('*').eq('status','published');
+    if (featuredOnly) q = q.eq('tampil_beranda', true);
+    q = q.order('tanggal',{ascending:false});
     if (limit) q = q.limit(limit);
     var r = await q;
     if (r.error) { console.error(r.error); return []; }
@@ -104,8 +106,10 @@
       window.dispatchEvent(new Event('resize'));
     }
     if (needArticles) {
-      var limit = document.body.classList.contains('all-articles-page') ? null : 3;
-      var articles = await getArticles(limit);
+      var isAllArticlesPage = document.body.classList.contains('all-articles-page');
+      // Beranda: hanya artikel yang ditandai admin untuk tampil di Beranda.
+      // Halaman "Semua Artikel": tampilkan semua artikel yang tayang.
+      var articles = isAllArticlesPage ? await getArticles(null, false) : await getArticles(null, true);
       articleGrids.forEach(function(grid) {
         grid.innerHTML = articles.length ? articles.map(articleCard).join('') :
           '<div class="empty-state">Belum ada artikel yang tayang.</div>';
