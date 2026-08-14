@@ -31,7 +31,7 @@
       .order('created_at', { ascending: false });
     if (res.error) {
       console.error('Gagal memuat pesan:', res.error);
-      showToast('Gagal memuat pesan masuk. Jalankan supabase-pesan.sql.');
+      showToast('Gagal memuat pesan masuk. Jalankan sql/supabase-pesan.sql.');
       return [];
     }
     // Samakan bentuk data dengan yang dipakai renderPesan() (field `tanggal`).
@@ -89,7 +89,7 @@
 
   async function fetchKonten() {
     var res = await supabaseClient.from('site_content').select('*').order('page', {ascending:true}).order('sort_order',{ascending:true});
-    if (res.error) { console.error('Gagal memuat konten:', res.error); showToast('Gagal memuat konten frontend. Jalankan supabase-cms.sql.'); return []; }
+    if (res.error) { console.error('Gagal memuat konten:', res.error); showToast('Gagal memuat konten frontend. Jalankan sql/supabase-cms.sql.'); return []; }
     return res.data || [];
   }
 
@@ -215,15 +215,99 @@
   // ---------- Toast ----------
   var toastEl = document.getElementById('toast');
   var toastText = document.getElementById('toastText');
+  var toastIcon = document.getElementById('toastIcon');
   var toastTimer;
-  function showToast(msg) {
+  var TOAST_ICONS = {
+    success: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+    error: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>',
+    info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>'
+  };
+  // type: 'success' | 'error' | 'info'. Kalau tidak diisi, otomatis dideteksi
+  // dari kata kunci "gagal" di pesan supaya kode lama yang cuma showToast(pesan)
+  // tetap dapat warna yang tepat tanpa perlu diubah satu-satu.
+  function showToast(msg, type) {
+    if (!type) type = /gagal|error|tidak valid|salah|kosong|wajib diisi/i.test(msg) ? 'error' : 'success';
     toastText.textContent = msg;
+    toastIcon.innerHTML = TOAST_ICONS[type] || TOAST_ICONS.info;
+    toastEl.classList.remove('toast-success', 'toast-error', 'toast-info');
+    toastEl.classList.add('toast-' + type);
     toastEl.classList.add('show');
     clearTimeout(toastTimer);
     toastTimer = setTimeout(function () {
       toastEl.classList.remove('show');
     }, 2600);
   }
+
+  // ---------- Confirm dialog (menggantikan confirm() bawaan browser) ----------
+  var confirmBackdrop = document.getElementById('confirmBackdrop');
+  var confirmTitle = document.getElementById('confirmTitle');
+  var confirmMessage = document.getElementById('confirmMessage');
+  var confirmOkBtn = document.getElementById('confirmOkBtn');
+  var confirmCancelBtn = document.getElementById('confirmCancelBtn');
+  var confirmResolver = null;
+
+  function showConfirm(message, opts) {
+    opts = opts || {};
+    confirmTitle.textContent = opts.title || 'Yakin?';
+    confirmMessage.textContent = message;
+    confirmOkBtn.textContent = opts.okLabel || 'Hapus';
+    confirmBackdrop.classList.add('show');
+    setTimeout(function () { confirmOkBtn.focus(); }, 10);
+    return new Promise(function (resolve) {
+      confirmResolver = resolve;
+    });
+  }
+  function closeConfirm(result) {
+    confirmBackdrop.classList.remove('show');
+    if (confirmResolver) { confirmResolver(result); confirmResolver = null; }
+  }
+  confirmOkBtn.addEventListener('click', function () { closeConfirm(true); });
+  confirmCancelBtn.addEventListener('click', function () { closeConfirm(false); });
+  confirmBackdrop.addEventListener('click', function (e) { if (e.target === confirmBackdrop) closeConfirm(false); });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && confirmBackdrop.classList.contains('show')) closeConfirm(false);
+  });
+
+  // ---------- Picker dialog (menggantikan prompt() untuk "Gunakan Template") ----------
+  var pickerBackdrop = document.getElementById('pickerBackdrop');
+  var pickerTitle = document.getElementById('pickerTitle');
+  var pickerMessage = document.getElementById('pickerMessage');
+  var pickerList = document.getElementById('pickerList');
+  var pickerCancelBtn = document.getElementById('pickerCancelBtn');
+  var pickerResolver = null;
+
+  // items: [{ label, sublabel, thumb }]. Resolve dengan index yang dipilih, atau null kalau batal.
+  function showPicker(items, opts) {
+    opts = opts || {};
+    pickerTitle.textContent = opts.title || 'Pilih Template';
+    pickerMessage.textContent = opts.message || 'Pilih salah satu untuk dijadikan dasar item baru.';
+    if (!items.length) {
+      pickerList.innerHTML = '<div class="picker-empty">Belum ada item yang bisa dijadikan template.</div>';
+    } else {
+      pickerList.innerHTML = items.map(function (it, i) {
+        var thumb = it.thumb ? '<img class="picker-item-thumb" src="' + escapeHtml(it.thumb) + '" alt="">' : '';
+        return '<button type="button" class="picker-item" data-picker-index="' + i + '">' + thumb +
+          '<span class="picker-item-label">' + escapeHtml(it.label) + (it.sublabel ? ' <span style="color:var(--ink-soft);">· ' + escapeHtml(it.sublabel) + '</span>' : '') + '</span></button>';
+      }).join('');
+    }
+    pickerBackdrop.classList.add('show');
+    return new Promise(function (resolve) {
+      pickerResolver = resolve;
+    });
+  }
+  function closePicker(result) {
+    pickerBackdrop.classList.remove('show');
+    if (pickerResolver) { pickerResolver(result); pickerResolver = null; }
+  }
+  pickerList.addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-picker-index]');
+    if (btn) closePicker(parseInt(btn.getAttribute('data-picker-index'), 10));
+  });
+  pickerCancelBtn.addEventListener('click', function () { closePicker(null); });
+  pickerBackdrop.addEventListener('click', function (e) { if (e.target === pickerBackdrop) closePicker(null); });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && pickerBackdrop.classList.contains('show')) closePicker(null);
+  });
 
   // ---------- Upload gambar ke Supabase Storage (bucket "konten") ----------
   // Dipakai oleh form Produk & Artikel supaya admin tinggal pilih file dari
@@ -268,7 +352,7 @@
     if (up.error) {
       console.error('Gagal upload gambar:', up.error);
       if (statusEl) statusEl.textContent = '';
-      showToast('Gagal upload gambar: ' + up.error.message + '. Pastikan bucket "konten" sudah dibuat (jalankan supabase-storage-gambar.sql).');
+      showToast('Gagal upload gambar: ' + up.error.message + '. Pastikan bucket "konten" sudah dibuat (jalankan sql/supabase-storage-gambar.sql).');
       return;
     }
 
@@ -508,25 +592,113 @@
     });
     if(!rows.length){cmsList.innerHTML='<div class="empty-state">Belum ada konten yang cocok.</div>';return;}
     cmsList.innerHTML=rows.map(function(r){
-      var preview=escapeHtml(r.value_id||r.value_en||'');
+      var isImage = r.content_type === 'image';
+      var preview = isImage
+        ? (r.value_id ? '<img class="cms-row-thumb" src="'+escapeHtml(r.value_id)+'" alt="">' : '<span class="cms-preview">Belum ada gambar</span>')
+        : '<span class="cms-preview">'+escapeHtml(r.value_id||r.value_en||'')+'</span>';
       return '<div class="cms-row" data-cms-row="'+escapeHtml(r.id)+'">'+
         '<div><span class="cms-page">'+escapeHtml(cmsPageLabel(r.page))+'</span></div>'+
-        '<div><span class="cms-label">'+escapeHtml(r.label||r.key)+'</span><span class="cms-preview">'+preview+'</span></div>'+        '<div class="cell-actions"><button class="btn btn-ghost btn-sm" data-edit-konten="'+escapeHtml(r.id)+'">Ubah</button><button class="btn btn-danger btn-sm" data-delete-konten="'+escapeHtml(r.id)+'">Hapus</button></div>'+      '</div>';
+        '<div style="display:flex;align-items:center;"><span class="cms-label">'+escapeHtml(r.label||r.key)+(isImage?' <span style="color:var(--ink-soft);font-weight:400;">(Gambar)</span>':'')+'</span>'+preview+'</div>'+
+        '<div class="cell-actions"><button class="btn btn-ghost btn-sm" data-edit-konten="'+escapeHtml(r.id)+'">Ubah</button><button class="btn btn-danger btn-sm" data-delete-konten="'+escapeHtml(r.id)+'">Hapus</button></div>'+
+      '</div>';
     }).join('');
   }
   function cmsEditor(r){
-    var typeOptions='<option value="text" '+(r.content_type==='text'?'selected':'')+'>Teks</option><option value="html" '+(r.content_type==='html'?'selected':'')+'>Teks + format sederhana</option><option value="attribute" '+(r.content_type==='attribute'?'selected':'')+'>Atribut (placeholder/title/label)</option>';
+    var isImage = r.content_type === 'image';
+    var typeOptions='<option value="text" '+(r.content_type==='text'?'selected':'')+'>Teks</option><option value="html" '+(r.content_type==='html'?'selected':'')+'>Teks + format sederhana</option><option value="attribute" '+(r.content_type==='attribute'?'selected':'')+'>Atribut (placeholder/title/label)</option><option value="image" '+(isImage?'selected':'')+'>Gambar</option>';
+    // Baris teks ID/EN disembunyikan (bukan dihapus dari DOM) saat jenisnya
+    // Gambar, supaya bisa toggle tanpa kehilangan isi kalau admin ganti pikiran.
+    var textFieldsStyle = isImage ? ' style="display:none;"' : '';
+    var imageFieldStyle = isImage ? '' : ' style="display:none;"';
     return '<div class="cms-editor" data-cms-editor="'+escapeHtml(r.id||'new')+'">'+
       '<div class="field"><label>Halaman</label><div class="input-shell"><select class="plain-input cms-page-input"><option value="index.html">Beranda</option><option value="produk.html">Produk</option><option value="semua-artikel.html">Artikel</option><option value="tentang.html">Tentang</option><option value="kontak.html">Kontak</option><option value="artikel.html">Detail Artikel</option></select></div></div>'+
-      '<div class="field"><label>Nama / Label Konten</label><div class="input-shell"><input class="plain-input cms-label-input" value="'+escapeHtml(r.label||'')+'" placeholder="Contoh: Judul hero"></div></div>'+
-      '<div class="field"><label>Bahasa Indonesia</label><div class="input-shell"><textarea class="plain-input cms-id-input" rows="3">'+escapeHtml(r.value_id||'')+'</textarea></div></div>'+
-      '<div class="field"><label>English</label><div class="input-shell"><textarea class="plain-input cms-en-input" rows="3">'+escapeHtml(r.value_en||'')+'</textarea></div></div>'+
+      '<div class="field"><label>Nama / Label Konten</label><div class="input-shell"><input class="plain-input cms-label-input" value="'+escapeHtml(r.label||'')+'" placeholder="Contoh: Judul hero, Foto galeri warehouse"></div></div>'+
       '<div class="field"><label>Jenis</label><div class="input-shell"><select class="plain-input cms-type-input">'+typeOptions+'</select></div></div>'+
-      '<div class="field"><label>Atribut (jika diperlukan)</label><div class="input-shell"><select class="plain-input cms-attr-input"><option value="">Tidak ada</option><option value="placeholder">Placeholder</option><option value="title">Title</option><option value="aria-label">Label aksesibilitas</option></select></div></div>'+
+      '<div class="field cms-text-field"'+textFieldsStyle+'><label>Bahasa Indonesia</label><div class="input-shell"><textarea class="plain-input cms-id-input" rows="3">'+escapeHtml(r.value_id||'')+'</textarea></div></div>'+
+      '<div class="field cms-text-field"'+textFieldsStyle+'><label>English</label><div class="input-shell"><textarea class="plain-input cms-en-input" rows="3">'+escapeHtml(r.value_en||'')+'</textarea></div></div>'+
+      '<div class="field cms-image-field"'+imageFieldStyle+'>'+
+        '<label>Gambar</label>'+
+        '<div class="image-upload-box" data-cms-image-box>'+
+          '<input type="file" class="cms-image-file" accept="image/*" hidden>'+
+          '<div class="image-upload-preview">'+
+            '<img class="cms-image-preview-img" src="'+escapeHtml(r.value_id||'')+'" alt=""'+(r.value_id?'':' hidden')+'>'+
+            '<span class="image-upload-empty cms-image-empty"'+(r.value_id?' hidden':'')+'>Belum ada gambar</span>'+
+          '</div>'+
+          '<div class="image-upload-actions">'+
+            '<button type="button" class="btn btn-ghost btn-sm cms-image-pick">Pilih Gambar</button>'+
+            '<button type="button" class="btn btn-ghost btn-sm btn-danger-text cms-image-remove"'+(r.value_id?'':' hidden')+'>Hapus</button>'+
+            '<span class="image-upload-status cms-image-status"></span>'+
+          '</div>'+
+          '<p class="field-hint">Seret &amp; lepas gambar, atau klik &ldquo;Pilih Gambar&rdquo;. JPG/PNG/WebP, maks 5MB.</p>'+
+          '<details class="image-url-fallback"><summary>Atau isi URL gambar manual</summary><div class="input-shell"><input type="text" class="plain-input cms-image-url-input" value="'+escapeHtml(r.value_id||'')+'" placeholder="images/nama-file.webp atau URL"></div></details>'+
+        '</div>'+
+      '</div>'+
+      '<div class="field cms-attr-field"><label>Atribut (jika diperlukan)</label><div class="input-shell"><select class="plain-input cms-attr-input"><option value="">Tidak ada</option><option value="placeholder">Placeholder</option><option value="title">Title</option><option value="aria-label">Label aksesibilitas</option><option value="src">Sumber gambar (src)</option><option value="alt">Teks alternatif (alt)</option></select></div></div>'+
       '<div class="field"><label>Status</label><div class="input-shell"><select class="plain-input cms-status-input"><option value="published">Tayang</option><option value="draft">Draft</option></select></div></div>'+
       '<div class="field"><label>Urutan</label><div class="input-shell"><input type="number" class="plain-input cms-order-input" value="'+(r.sort_order||0)+'"></div></div>'+
       '<div class="cms-editor-actions"><button type="button" class="btn btn-ghost btn-sm" data-cancel-cms="'+escapeHtml(r.id||'new')+'">Batal</button><button type="button" class="btn btn-primary btn-sm" data-save-cms="'+escapeHtml(r.id||'new')+'">Simpan</button></div>'+
       '</div>';
+  }
+  function setCmsImagePreview(editor, url){
+    var img = editor.querySelector('.cms-image-preview-img');
+    var empty = editor.querySelector('.cms-image-empty');
+    var removeBtn = editor.querySelector('.cms-image-remove');
+    var urlInput = editor.querySelector('.cms-image-url-input');
+    if (urlInput) urlInput.value = url || '';
+    if (url) { img.src = url; img.hidden = false; if (empty) empty.hidden = true; if (removeBtn) removeBtn.hidden = false; }
+    else { img.hidden = true; img.src = ''; if (empty) empty.hidden = false; if (removeBtn) removeBtn.hidden = true; }
+  }
+  async function uploadCmsImage(editor, file){
+    var statusEl = editor.querySelector('.cms-image-status');
+    if (!file) return;
+    if (!/^image\//.test(file.type)) { showToast('File harus berupa gambar (JPG/PNG/WebP).'); return; }
+    if (file.size > 5 * 1024 * 1024) { showToast('Ukuran gambar maksimal 5MB.'); return; }
+    if (statusEl) statusEl.textContent = 'Mengunggah...';
+    var ext = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg';
+    var path = 'konten-cms/' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.' + ext;
+    var up = await supabaseClient.storage.from(IMAGE_BUCKET).upload(path, file, { cacheControl: '3600', upsert: false });
+    if (up.error) {
+      console.error('Gagal upload gambar CMS:', up.error);
+      if (statusEl) statusEl.textContent = '';
+      showToast('Gagal upload gambar: ' + up.error.message);
+      return;
+    }
+    var pub = supabaseClient.storage.from(IMAGE_BUCKET).getPublicUrl(path);
+    var publicUrl = pub && pub.data ? pub.data.publicUrl : '';
+    setCmsImagePreview(editor, publicUrl);
+    if (statusEl) statusEl.textContent = 'Gambar terunggah.';
+    setTimeout(function () { if (statusEl) statusEl.textContent = ''; }, 2200);
+  }
+  function setupCmsImageEditor(editor){
+    var fileInput = editor.querySelector('.cms-image-file');
+    var pickBtn = editor.querySelector('.cms-image-pick');
+    var removeBtn = editor.querySelector('.cms-image-remove');
+    var urlInput = editor.querySelector('.cms-image-url-input');
+    var box = editor.querySelector('[data-cms-image-box]');
+    if (!fileInput) return;
+    pickBtn.addEventListener('click', function(){ fileInput.click(); });
+    fileInput.addEventListener('change', function(){
+      if (fileInput.files && fileInput.files[0]) uploadCmsImage(editor, fileInput.files[0]);
+      fileInput.value = '';
+    });
+    removeBtn.addEventListener('click', function(){ setCmsImagePreview(editor, ''); });
+    urlInput.addEventListener('input', function(){ setCmsImagePreview(editor, urlInput.value.trim()); });
+    ['dragover','dragenter'].forEach(function(evt){ box.addEventListener(evt, function(e){ e.preventDefault(); box.classList.add('drag-over'); }); });
+    ['dragleave','drop'].forEach(function(evt){ box.addEventListener(evt, function(e){ e.preventDefault(); box.classList.remove('drag-over'); }); });
+    box.addEventListener('drop', function(e){
+      var file = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+      if (file) uploadCmsImage(editor, file);
+    });
+  }
+  // Toggle tampilan field teks vs field gambar saat admin ganti dropdown "Jenis".
+  function bindCmsTypeToggle(editor){
+    var typeInput = editor.querySelector('.cms-type-input');
+    typeInput.addEventListener('change', function(){
+      var isImage = typeInput.value === 'image';
+      editor.querySelectorAll('.cms-text-field').forEach(function(el){ el.style.display = isImage ? 'none' : ''; });
+      var imgField = editor.querySelector('.cms-image-field');
+      if (imgField) imgField.style.display = isImage ? '' : 'none';
+    });
   }
   function openCmsEditor(id){
     var row=id?data.konten.find(function(x){return x.id===id;}):{id:'new',page:'index.html',label:'',value_id:'',value_en:'',content_type:'text',attribute_name:'',status:'published',sort_order:data.konten.length+1};
@@ -535,13 +707,28 @@
     if(id && existing) existing.replaceWith(editor); else cmsList.prepend(editor);
     editor.querySelector('.cms-page-input').value=row.page;
     editor.querySelector('.cms-attr-input').value=row.attribute_name||'';
+    editor.querySelector('.cms-status-input').value=row.status||'published';
+    editor.querySelector('.cms-type-input').value=row.content_type||'text';
+    setupCmsImageEditor(editor);
+    bindCmsTypeToggle(editor);
   }
   cmsList.addEventListener('click', async function(e){
     var edit=e.target.getAttribute('data-edit-konten'), del=e.target.getAttribute('data-delete-konten'), cancel=e.target.getAttribute('data-cancel-cms'), save=e.target.getAttribute('data-save-cms');
     if(edit){openCmsEditor(edit);return;}
     if(cancel){renderKonten();return;}
-    if(del){if(!confirm('Hapus konten ini dari CMS?'))return;var rd=await supabaseClient.from('site_content').delete().eq('id',del);if(rd.error){showToast('Gagal menghapus konten: '+rd.error.message);return;}data.konten=await fetchKonten();renderKonten();showToast('Konten dihapus.');return;}
-    if(save){var ed=e.target.closest('.cms-editor');var id=save==='new'?null:save;var payload={page:ed.querySelector('.cms-page-input').value,label:ed.querySelector('.cms-label-input').value.trim()||'Konten',value_id:ed.querySelector('.cms-id-input').value,value_en:ed.querySelector('.cms-en-input').value,content_type:ed.querySelector('.cms-type-input').value,attribute_name:ed.querySelector('.cms-attr-input').value||null,status:ed.querySelector('.cms-status-input').value,sort_order:parseInt(ed.querySelector('.cms-order-input').value||'0',10)};if(!payload.label){showToast('Nama konten wajib diisi.');return;}var rr=id?await supabaseClient.from('site_content').update(payload).eq('id',id):await supabaseClient.from('site_content').insert(Object.assign({key:toSlug(payload.page+'-'+payload.label)+'-'+Date.now()},payload));if(rr.error){showToast('Gagal menyimpan konten: '+rr.error.message);return;}data.konten=await fetchKonten();renderKonten();renderOverview();showToast('Konten berhasil disimpan.');}
+    if(del){if(!await showConfirm('Konten ini akan dihapus dari CMS dan tidak bisa dikembalikan.',{title:'Hapus konten ini?'}))return;var rd=await supabaseClient.from('site_content').delete().eq('id',del);if(rd.error){showToast('Gagal menghapus konten: '+rd.error.message);return;}data.konten=await fetchKonten();renderKonten();showToast('Konten dihapus.');return;}
+    if(save){
+      var ed=e.target.closest('.cms-editor');var id=save==='new'?null:save;
+      var contentType=ed.querySelector('.cms-type-input').value;
+      var isImage=contentType==='image';
+      var valueId = isImage ? (ed.querySelector('.cms-image-url-input').value||'').trim() : ed.querySelector('.cms-id-input').value;
+      var payload={page:ed.querySelector('.cms-page-input').value,label:ed.querySelector('.cms-label-input').value.trim()||'Konten',value_id:valueId,value_en:isImage?'':ed.querySelector('.cms-en-input').value,content_type:contentType,attribute_name:ed.querySelector('.cms-attr-input').value||(isImage?'src':null),status:ed.querySelector('.cms-status-input').value,sort_order:parseInt(ed.querySelector('.cms-order-input').value||'0',10)};
+      if(!payload.label){showToast('Nama konten wajib diisi.');return;}
+      if(isImage && !payload.value_id){showToast('Pilih atau isi URL gambar terlebih dahulu.');return;}
+      var rr=id?await supabaseClient.from('site_content').update(payload).eq('id',id):await supabaseClient.from('site_content').insert(Object.assign({key:toSlug(payload.page+'-'+payload.label)+'-'+Date.now()},payload));
+      if(rr.error){showToast('Gagal menyimpan konten: '+rr.error.message);return;}
+      data.konten=await fetchKonten();renderKonten();renderOverview();showToast('Konten berhasil disimpan.');
+    }
   });
   if(cmsPageFilter) cmsPageFilter.addEventListener('change',renderKonten);
   if(cmsSearch) cmsSearch.addEventListener('input',renderKonten);
@@ -731,7 +918,7 @@
     var delId = e.target.getAttribute('data-delete-produk');
     if (editId) openProdukModal(editId);
     if (dupId) openProdukModal(dupId, { duplicate: true });
-    if (delId) { if (!confirm('Yakin ingin menghapus produk ini?')) return; var res = await supabaseClient.from('produk').delete().eq('id', delId); if (res.error) { showToast('Gagal menghapus produk: ' + res.error.message); return; } data.produk = await fetchProduk(); renderProduk(); renderOverview(); showToast('Produk dihapus.'); }
+    if (delId) { if (!await showConfirm('Produk ini akan dihapus dari situs dan tidak bisa dikembalikan.', { title: 'Hapus produk ini?' })) return; var res = await supabaseClient.from('produk').delete().eq('id', delId); if (res.error) { showToast('Gagal menghapus produk: ' + res.error.message); return; } data.produk = await fetchProduk(); renderProduk(); renderOverview(); showToast('Produk dihapus.'); }
   });
   document.getElementById('addProdukBtn').addEventListener('click', function () { openProdukModal(null); });
   document.getElementById('produkModalClose').addEventListener('click', closeProdukModal);
@@ -739,13 +926,11 @@
 
   // "Gunakan Template" di atas tabel: pilih dari daftar produk yang sudah ada
   // untuk dijadikan dasar produk baru (tanpa harus scroll cari tombol Duplikat).
-  document.getElementById('templateProdukBtn').addEventListener('click', function () {
+  document.getElementById('templateProdukBtn').addEventListener('click', async function () {
     if (!data.produk.length) { showToast('Belum ada produk yang bisa dijadikan template.'); return; }
-    var pilihan = data.produk.map(function (p, i) { return (i + 1) + '. ' + p.nama; }).join('\n');
-    var input = prompt('Pilih nomor produk yang mau dijadikan template:\n\n' + pilihan);
-    if (!input) return;
-    var idx = parseInt(input, 10) - 1;
-    if (isNaN(idx) || !data.produk[idx]) { showToast('Nomor tidak valid.'); return; }
+    var items = data.produk.map(function (p) { return { label: p.nama, sublabel: p.kategori, thumb: p.gambar_url }; });
+    var idx = await showPicker(items, { title: 'Gunakan Produk sebagai Template', message: 'Pilih produk yang mau dijadikan dasar produk baru.' });
+    if (idx === null || !data.produk[idx]) return;
     openProdukModal(data.produk[idx].id, { duplicate: true });
   });
 
@@ -874,7 +1059,7 @@
     if (editId) openArtikelModal(editId);
     if (dupId) openArtikelModal(dupId, { duplicate: true });
     if (delId) {
-      if (!confirm('Yakin ingin menghapus artikel ini?')) return;
+      if (!await showConfirm('Artikel ini akan dihapus dari situs dan tidak bisa dikembalikan.', { title: 'Hapus artikel ini?' })) return;
       var res = await supabaseClient.from('artikel').delete().eq('id', delId);
       if (res.error) {
         console.error(res.error);
@@ -893,13 +1078,11 @@
   document.getElementById('artikelModalCancel').addEventListener('click', closeArtikelModal);
 
   // "Gunakan Template": pilih artikel lama untuk dijadikan dasar artikel baru.
-  document.getElementById('templateArtikelBtn').addEventListener('click', function () {
+  document.getElementById('templateArtikelBtn').addEventListener('click', async function () {
     if (!data.artikel.length) { showToast('Belum ada artikel yang bisa dijadikan template.'); return; }
-    var pilihan = data.artikel.map(function (a, i) { return (i + 1) + '. ' + a.judul; }).join('\n');
-    var input = prompt('Pilih nomor artikel yang mau dijadikan template:\n\n' + pilihan);
-    if (!input) return;
-    var idx = parseInt(input, 10) - 1;
-    if (isNaN(idx) || !data.artikel[idx]) { showToast('Nomor tidak valid.'); return; }
+    var items = data.artikel.map(function (a) { return { label: a.judul, sublabel: a.kategori, thumb: a.gambar_url }; });
+    var idx = await showPicker(items, { title: 'Gunakan Artikel sebagai Template', message: 'Pilih artikel yang mau dijadikan dasar artikel baru.' });
+    if (idx === null || !data.artikel[idx]) return;
     openArtikelModal(data.artikel[idx].id, { duplicate: true });
   });
 
@@ -921,7 +1104,7 @@
       showToast('Status pesan diperbarui.');
     }
     if (delId) {
-      if (!confirm('Yakin ingin menghapus pesan ini?')) return;
+      if (!await showConfirm('Pesan ini akan dihapus dan tidak bisa dikembalikan.', { title: 'Hapus pesan ini?' })) return;
       var resDel = await supabaseClient.from('pesan').delete().eq('id', delId);
       if (resDel.error) {
         console.error(resDel.error);

@@ -11,6 +11,13 @@
       // konten statis asli dari HTML. Jangan menyembunyikannya.
       if(!r) return;
       el.style.display = '';
+      // Gambar tidak punya versi ID/EN terpisah — value_id dipakai sebagai URL-nya.
+      if(r.content_type==='image'){
+        if(!r.value_id) return; // URL kosong: pertahankan gambar statis asli
+        if(el.tagName==='IMG') el.setAttribute('src', r.value_id);
+        else el.style.backgroundImage = 'url(' + r.value_id + ')';
+        return;
+      }
       var val=lang==='en' && r.value_en ? r.value_en : (r.value_id || r.value_en || '');
       if(r.content_type==='html') el.innerHTML=val; else el.textContent=val;
     });

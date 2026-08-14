@@ -336,7 +336,7 @@ try {
                if (res.error) {
                   // Ditampilkan jelas di console (bukan cuma di-swallow) supaya gampang
                   // di-debug lewat DevTools > Console kalau pesan tidak muncul di dashboard.
-                  // Penyebab paling umum: tabel `pesan` belum dibuat (jalankan supabase-pesan.sql)
+                  // Penyebab paling umum: tabel `pesan` belum dibuat (jalankan sql/supabase-pesan.sql)
                   // atau RLS policy insert untuk role `anon` belum aktif.
                   console.error('[CocoFiber] Gagal menyimpan pesan ke Supabase:', res.error.message, res.error);
                }
