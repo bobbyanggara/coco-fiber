@@ -332,6 +332,38 @@
     }
   }
 
+  // ---------- Gambar kedua artikel = <img> pertama yang tertanam di dalam
+  // "Isi Artikel". Jadi total gambar artikel tetap 2 (utama + ini), bukan
+  // gambar tambahan yang ke-3. Field upload "Gambar Kedua" di form cuma
+  // jadi cara mudah untuk mengganti <img> itu tanpa edit HTML manual.
+  function getContentImageSrc() {
+    var editor = document.getElementById('artikelKonten');
+    var img = editor && editor.querySelector('img');
+    return img ? img.getAttribute('src') : '';
+  }
+  function setContentImage(url) {
+    ['artikelKonten', 'artikelKontenEn'].forEach(function (editorId) {
+      var editor = document.getElementById(editorId);
+      if (!editor) return;
+      var img = editor.querySelector('img');
+      if (url) {
+        if (img) {
+          img.setAttribute('src', url);
+        } else {
+          var newImg = document.createElement('img');
+          newImg.setAttribute('src', url);
+          newImg.setAttribute('alt', '');
+          newImg.style.maxWidth = '100%';
+          newImg.style.borderRadius = '12px';
+          newImg.style.margin = '0.75rem 0';
+          editor.insertBefore(newImg, editor.firstChild);
+        }
+      } else if (img) {
+        img.remove();
+      }
+    });
+  }
+
   async function uploadImageFile(prefix, file) {
     var statusEl = document.getElementById(prefix + 'ImageStatus');
     var urlInput = document.getElementById(prefix + 'Gambar');
@@ -360,6 +392,7 @@
     var publicUrl = pub && pub.data ? pub.data.publicUrl : '';
     urlInput.value = publicUrl;
     setImagePreview(prefix, publicUrl);
+    if (prefix === 'artikel2') setContentImage(publicUrl);
     if (statusEl) statusEl.textContent = 'Gambar terunggah.';
     setTimeout(function () { if (statusEl) statusEl.textContent = ''; }, 2200);
   }
@@ -380,9 +413,13 @@
     removeBtn.addEventListener('click', function () {
       urlInput.value = '';
       setImagePreview(prefix, '');
+      if (prefix === 'artikel2') setContentImage('');
     });
     // Update pratinjau kalau admin isi URL manual lewat kolom fallback.
-    urlInput.addEventListener('change', function () { setImagePreview(prefix, urlInput.value.trim()); });
+    urlInput.addEventListener('change', function () {
+      setImagePreview(prefix, urlInput.value.trim());
+      if (prefix === 'artikel2') setContentImage(urlInput.value.trim());
+    });
 
     // Drag & drop
     ['dragenter', 'dragover'].forEach(function (evt) {
@@ -1000,10 +1037,10 @@
       document.getElementById('artikelRingkasanEn').value = editing.ringkasan_en || '';
       document.getElementById('artikelKategori').value = editing.kategori || '';
       document.getElementById('artikelGambar').value = editing.gambar_url || '';
-      document.getElementById('artikel2Gambar').value = editing.gambar_url_2 || '';
       document.getElementById('artikelPenulis').value = editing.penulis || '';
       document.getElementById('artikelKonten').innerHTML = editing.konten || '';
       document.getElementById('artikelKontenEn').innerHTML = editing.konten_en || '';
+      document.getElementById('artikel2Gambar').value = getContentImageSrc();
       document.getElementById('artikelStatus').value = isDuplicate ? 'draft' : editing.status;
       document.getElementById('artikelTampilBeranda').checked = editing.tampil_beranda !== false;
     } else {
@@ -1026,7 +1063,6 @@
       ringkasan_en: document.getElementById('artikelRingkasanEn').value.trim(),
       kategori: document.getElementById('artikelKategori').value.trim(),
       gambar_url: document.getElementById('artikelGambar').value.trim(),
-      gambar_url_2: document.getElementById('artikel2Gambar').value.trim(),
       penulis: document.getElementById('artikelPenulis').value.trim(),
       konten: document.getElementById('artikelKonten').innerHTML.trim(),
       konten_en: document.getElementById('artikelKontenEn').innerHTML.trim(),
