@@ -84,6 +84,27 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         <input type="text" id="topbarSearch" placeholder="Cari produk atau artikel...">
       </div>
+      <div class="topbar-right">
+        <div class="topbar-user">
+          <button class="topbar-user-btn" id="userMenuBtn" aria-haspopup="true" aria-expanded="false">
+            <div class="admin-avatar">A</div>
+            <span class="topbar-user-name">Admin CocoFiber</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="topbar-user-menu" id="userMenu">
+            <div class="session-pill" id="sessionPill">Sesi aktif</div>
+            <button data-section="pengaturan" class="menu-nav">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.65 1.65 0 004.6 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 9c.11.36.31.68.6.92"/></svg>
+              Pengaturan
+            </button>
+            <div class="menu-divider"></div>
+            <button data-action="logout" class="menu-danger">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+              Keluar
+            </button>
+          </div>
+        </div>
+      </div>
     </header>
 
     <main class="content">
@@ -92,22 +113,34 @@
       <section class="section active" id="section-overview">
         <div class="stat-grid">
           <div class="stat-card">
-            <span class="eyebrow">Produk</span>
+            <div class="stat-card-head">
+              <span class="eyebrow">Produk</span>
+              <span class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7L12 3 4 7v10l8 4 8-4V7z"/><path d="M4 7l8 4 8-4M12 11v10"/></svg></span>
+            </div>
             <div class="stat-value" id="statProduk">0</div>
             <div class="stat-delta">Total produk terdaftar</div>
           </div>
           <div class="stat-card">
-            <span class="eyebrow">Artikel</span>
+            <div class="stat-card-head">
+              <span class="eyebrow">Artikel</span>
+              <span class="stat-icon tone-dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg></span>
+            </div>
             <div class="stat-value" id="statArtikel">0</div>
             <div class="stat-delta">Total artikel diterbitkan</div>
           </div>
           <div class="stat-card">
-            <span class="eyebrow">Pesan Baru</span>
+            <div class="stat-card-head">
+              <span class="eyebrow">Pesan Baru</span>
+              <span class="stat-icon tone-danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v14H7l-3 3V4z"/></svg></span>
+            </div>
             <div class="stat-value" id="statPesanBaru">0</div>
             <div class="stat-delta up">Perlu ditindaklanjuti</div>
           </div>
           <div class="stat-card">
-            <span class="eyebrow">Konten Tayang</span>
+            <div class="stat-card-head">
+              <span class="eyebrow">Konten Tayang</span>
+              <span class="stat-icon tone-green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></span>
+            </div>
             <div class="stat-value" id="statPublished">0</div>
             <div class="stat-delta">Produk + artikel published</div>
           </div>
@@ -138,6 +171,18 @@
               <button class="btn btn-primary btn-sm" id="addProdukBtn">+ Tambah Produk</button>
             </div>
           </div>
+          <div class="filter-bar">
+            <div class="chip-group" id="produkFilterChips">
+              <button class="chip active" data-status-filter="all">Semua <span class="chip-count" id="countProdukAll">0</span></button>
+              <button class="chip" data-status-filter="published">Tayang <span class="chip-count" id="countProdukPublished">0</span></button>
+              <button class="chip" data-status-filter="draft">Draft <span class="chip-count" id="countProdukDraft">0</span></button>
+            </div>
+            <select class="plain-input sort-select" id="produkSort">
+              <option value="urutan">Urutkan: Manual</option>
+              <option value="nama">Nama A–Z</option>
+              <option value="terbaru">Terbaru</option>
+            </select>
+          </div>
           <div class="panel-body no-pad">
             <div class="table-wrap">
               <table class="data-table">
@@ -147,6 +192,7 @@
                 <tbody id="produkTableBody"></tbody>
               </table>
             </div>
+            <div class="table-footer"><span id="produkTableCount"></span></div>
           </div>
         </div>
       </section>
@@ -163,6 +209,13 @@
               <button class="btn btn-primary btn-sm" id="addArtikelBtn">+ Tulis Artikel</button>
             </div>
           </div>
+          <div class="filter-bar">
+            <div class="chip-group" id="artikelFilterChips">
+              <button class="chip active" data-status-filter="all">Semua <span class="chip-count" id="countArtikelAll">0</span></button>
+              <button class="chip" data-status-filter="published">Tayang <span class="chip-count" id="countArtikelPublished">0</span></button>
+              <button class="chip" data-status-filter="draft">Draft <span class="chip-count" id="countArtikelDraft">0</span></button>
+            </div>
+          </div>
           <div class="panel-body no-pad">
             <div class="table-wrap">
               <table class="data-table">
@@ -172,6 +225,7 @@
                 <tbody id="artikelTableBody"></tbody>
               </table>
             </div>
+            <div class="table-footer"><span id="artikelTableCount"></span></div>
           </div>
         </div>
       </section>

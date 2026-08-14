@@ -50,7 +50,19 @@
           <span id="loginAlertText">Email atau password salah. Silakan coba lagi.</span>
         </div>
 
+        <div class="alert alert-danger" id="lockoutAlert">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          <span id="lockoutAlertText"></span>
+        </div>
+
         <form id="adminLoginForm" novalidate>
+          <!-- Honeypot anti-bot: bidang ini disembunyikan dari manusia lewat CSS,
+               tapi bot pengisi form otomatis biasanya tetap mengisinya. -->
+          <div class="honeypot" aria-hidden="true">
+            <label for="website">Website</label>
+            <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+          </div>
+
           <div class="field">
             <label for="username">Email</label>
             <div class="input-shell icon-input">
@@ -72,12 +84,19 @@
                 <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
               </button>
             </div>
+            <p class="capslock-warning" id="capslockWarning">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l9 8h-6v10H9V10H3z"/></svg>
+              Caps Lock aktif
+            </p>
           </div>
 
-          <label class="remember">
-            <input type="checkbox" id="remember" name="remember">
-            Ingat saya di perangkat ini
-          </label>
+          <div class="remember-row">
+            <label class="remember">
+              <input type="checkbox" id="remember" name="remember">
+              Ingat saya di perangkat ini
+            </label>
+            <span class="attempts-left" id="attemptsLeft"></span>
+          </div>
 
           <button type="submit" class="btn btn-primary btn-block" id="submitBtn">
             <span class="spinner"></span>
@@ -86,6 +105,11 @@
         </form>
 
         <p class="help-note">Lupa kredensial atau butuh akses? <a href="https://wa.me/6285257930183" target="_blank" rel="noopener">Hubungi tim IT</a></p>
+
+        <div class="security-note">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/></svg>
+          Koneksi terenkripsi &middot; percobaan login dibatasi untuk keamanan akun
+        </div>
       </div>
     </main>
 

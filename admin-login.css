@@ -186,13 +186,54 @@ form{display:flex;flex-direction:column;gap:1.05rem;}
   color:var(--ink-soft);
   cursor:pointer;
   user-select:none;
-  margin-top:-0.1rem;
 }
 .remember input{
   width:16px;height:16px;
   accent-color:var(--coir-600);
   cursor:pointer;
 }
+.remember-row{
+  display:flex;align-items:center;justify-content:space-between;gap:0.6rem;
+  margin-top:-0.1rem;flex-wrap:wrap;
+}
+.attempts-left{font-size:0.74rem;color:var(--coir-600);font-weight:600;}
+
+/* ---------- Honeypot (bot trap, hidden from real users) ---------- */
+.honeypot{
+  position:absolute;
+  left:-9999px;
+  width:1px;height:1px;
+  overflow:hidden;
+  opacity:0;
+}
+
+/* ---------- Caps Lock warning ---------- */
+.capslock-warning{
+  display:none;
+  align-items:center;gap:0.4rem;
+  margin-top:0.5rem;
+  font-size:0.78rem;
+  color:var(--coir-600);
+  font-weight:600;
+}
+.capslock-warning.show{display:flex;}
+.capslock-warning svg{width:14px;height:14px;flex-shrink:0;}
+
+/* ---------- Security note ---------- */
+.security-note{
+  display:flex;align-items:center;gap:0.5rem;
+  margin-top:1.1rem;
+  padding:0.7rem 0.85rem;
+  background:var(--success-bg);
+  color:var(--success);
+  border-radius:10px;
+  font-size:0.76rem;
+  line-height:1.4;
+}
+.security-note svg{width:15px;height:15px;flex-shrink:0;}
+
+/* ---------- Lockout alert ---------- */
+#lockoutAlert{margin-bottom:-0.2rem;}
 
 .help-note{
   text-align:center;

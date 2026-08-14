@@ -256,22 +256,66 @@
 
   // ---------- Produk ----------
   var produkTableBody = document.getElementById('produkTableBody');
+  var produkStatusFilter = 'all';
+  var produkSortSelect = document.getElementById('produkSort');
+  var produkSearchQuery = '';
+
+  function emptyStateHtml(msg) {
+    return '<div class="empty-state"><span class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>' + msg + '</div>';
+  }
+
+  function applyProdukFilters(list) {
+    var out = list;
+    if (produkStatusFilter !== 'all') {
+      out = out.filter(function (p) { return p.status === produkStatusFilter; });
+    }
+    if (produkSearchQuery) {
+      var q = produkSearchQuery;
+      out = out.filter(function (p) {
+        return ((p.nama || '') + ' ' + (p.kategori || '')).toLowerCase().indexOf(q) !== -1;
+      });
+    }
+    var sortBy = produkSortSelect ? produkSortSelect.value : 'urutan';
+    out = out.slice();
+    if (sortBy === 'nama') {
+      out.sort(function (a, b) { return String(a.nama || '').localeCompare(String(b.nama || '')); });
+    } else if (sortBy === 'terbaru') {
+      out.sort(function (a, b) { return String(b.created_at || '').localeCompare(String(a.created_at || '')); });
+    } else {
+      out.sort(function (a, b) { return (a.urutan || 0) - (b.urutan || 0); });
+    }
+    return out;
+  }
+
   function renderProduk() {
     document.querySelectorAll('.nav-count[data-count="produk"]').forEach(function (el) {
       el.textContent = data.produk.length;
     });
+    var publishedCount = data.produk.filter(function (p) { return p.status === 'published'; }).length;
+    var draftCount = data.produk.filter(function (p) { return p.status === 'draft'; }).length;
+    setText('countProdukAll', data.produk.length);
+    setText('countProdukPublished', publishedCount);
+    setText('countProdukDraft', draftCount);
+
+    var rows = applyProdukFilters(data.produk);
+    setText('produkTableCount', rows.length + ' dari ' + data.produk.length + ' produk ditampilkan');
+
     if (!data.produk.length) {
-      produkTableBody.innerHTML = '<tr><td colspan="5"><div class="empty-state">Belum ada produk. Klik "Tambah Produk" untuk mulai.</div></td></tr>';
+      produkTableBody.innerHTML = '<tr><td colspan="5">' + emptyStateHtml('Belum ada produk. Klik &ldquo;Tambah Produk&rdquo; untuk mulai.') + '</td></tr>';
       return;
     }
-    produkTableBody.innerHTML = data.produk.map(function (p) {
+    if (!rows.length) {
+      produkTableBody.innerHTML = '<tr><td colspan="5">' + emptyStateHtml('Tidak ada produk yang cocok dengan filter/pencarian.') + '</td></tr>';
+      return;
+    }
+    produkTableBody.innerHTML = rows.map(function (p) {
       return '' +
         '<tr>' +
-          '<td><div class="row-flex"><div><span class="cell-title">' + escapeHtml(p.nama) + '</span><span class="cell-sub">' + escapeHtml(p.kategori || '') + '</span></div></div></td>' +
-          '<td>' + escapeHtml(p.harga || '') + '</td>' +
-          '<td>' + escapeHtml(p.supply_ability || '') + '</td>' +
-          '<td><span class="badge ' + (p.status === 'published' ? 'badge-new' : 'badge-pending') + '">' + (p.status === 'published' ? 'Tayang' : 'Draft') + '</span></td>' +
-          '<td><div class="cell-actions">' +
+          '<td data-label="Produk"><div class="row-flex"><div><span class="cell-title">' + escapeHtml(p.nama) + '</span><span class="cell-sub">' + escapeHtml(p.kategori || '') + '</span></div></div></td>' +
+          '<td data-label="Harga">' + escapeHtml(p.harga || '—') + '</td>' +
+          '<td data-label="Stok / Supply">' + escapeHtml(p.supply_ability || '—') + '</td>' +
+          '<td data-label="Status"><span class="badge ' + (p.status === 'published' ? 'badge-new' : 'badge-pending') + '">' + (p.status === 'published' ? 'Tayang' : 'Draft') + '</span></td>' +
+          '<td class="cell-actions-td"><div class="cell-actions">' +
             '<button class="btn btn-ghost btn-sm" data-edit-produk="' + p.id + '">Ubah</button>' +
             '<button class="btn btn-danger btn-sm" data-delete-produk="' + p.id + '">Hapus</button>' +
           '</div></td>' +
@@ -279,29 +323,81 @@
     }).join('');
   }
 
+  function setText(id, val) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = val;
+  }
+
+  document.querySelectorAll('#produkFilterChips [data-status-filter]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      produkStatusFilter = btn.getAttribute('data-status-filter');
+      document.querySelectorAll('#produkFilterChips .chip').forEach(function (c) { c.classList.toggle('active', c === btn); });
+      renderProduk();
+    });
+  });
+  if (produkSortSelect) produkSortSelect.addEventListener('change', renderProduk);
+
   // ---------- Artikel ----------
   var artikelTableBody = document.getElementById('artikelTableBody');
+  var artikelStatusFilter = 'all';
+  var artikelSearchQuery = '';
+
+  function applyArtikelFilters(list) {
+    var out = list;
+    if (artikelStatusFilter !== 'all') {
+      out = out.filter(function (a) { return a.status === artikelStatusFilter; });
+    }
+    if (artikelSearchQuery) {
+      var q = artikelSearchQuery;
+      out = out.filter(function (a) {
+        return ((a.judul || '') + ' ' + (a.kategori || '')).toLowerCase().indexOf(q) !== -1;
+      });
+    }
+    return out;
+  }
+
   function renderArtikel() {
     document.querySelectorAll('.nav-count[data-count="artikel"]').forEach(function (el) {
       el.textContent = data.artikel.length;
     });
+    var publishedCount = data.artikel.filter(function (a) { return a.status === 'published'; }).length;
+    var draftCount = data.artikel.filter(function (a) { return a.status === 'draft'; }).length;
+    setText('countArtikelAll', data.artikel.length);
+    setText('countArtikelPublished', publishedCount);
+    setText('countArtikelDraft', draftCount);
+
+    var rows = applyArtikelFilters(data.artikel);
+    setText('artikelTableCount', rows.length + ' dari ' + data.artikel.length + ' artikel ditampilkan');
+
     if (!data.artikel.length) {
-      artikelTableBody.innerHTML = '<tr><td colspan="4"><div class="empty-state">Belum ada artikel.</div></td></tr>';
+      artikelTableBody.innerHTML = '<tr><td colspan="4">' + emptyStateHtml('Belum ada artikel.') + '</td></tr>';
       return;
     }
-    artikelTableBody.innerHTML = data.artikel.map(function (a) {
+    if (!rows.length) {
+      artikelTableBody.innerHTML = '<tr><td colspan="4">' + emptyStateHtml('Tidak ada artikel yang cocok dengan filter/pencarian.') + '</td></tr>';
+      return;
+    }
+    artikelTableBody.innerHTML = rows.map(function (a) {
       return '' +
         '<tr>' +
-          '<td><span class="cell-title">' + escapeHtml(a.judul) + '</span><span class="cell-sub">' + escapeHtml(a.kategori || '') + ' · ' + a.tanggal + '</span></td>' +
-          '<td><span class="badge ' + (a.status === 'published' ? 'badge-new' : 'badge-pending') + '">' + (a.status === 'published' ? 'Tayang' : 'Draft') + '</span></td>' +
-          '<td>' + a.tanggal + '</td>' +
-          '<td><div class="cell-actions">' +
+          '<td data-label="Judul"><span class="cell-title">' + escapeHtml(a.judul) + '</span><span class="cell-sub">' + escapeHtml(a.kategori || '') + ' · ' + a.tanggal + '</span></td>' +
+          '<td data-label="Status"><span class="badge ' + (a.status === 'published' ? 'badge-new' : 'badge-pending') + '">' + (a.status === 'published' ? 'Tayang' : 'Draft') + '</span></td>' +
+          '<td data-label="Tanggal">' + a.tanggal + '</td>' +
+          '<td class="cell-actions-td"><div class="cell-actions">' +
             '<button class="btn btn-ghost btn-sm" data-edit-artikel="' + a.id + '">Ubah</button>' +
             '<button class="btn btn-danger btn-sm" data-delete-artikel="' + a.id + '">Hapus</button>' +
           '</div></td>' +
         '</tr>';
     }).join('');
   }
+
+  document.querySelectorAll('#artikelFilterChips [data-status-filter]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      artikelStatusFilter = btn.getAttribute('data-status-filter');
+      document.querySelectorAll('#artikelFilterChips .chip').forEach(function (c) { c.classList.toggle('active', c === btn); });
+      renderArtikel();
+    });
+  });
 
   // ---------- Konten Frontend ----------
   var cmsList = document.getElementById('cmsList');
@@ -727,18 +823,79 @@
     });
   });
 
-  // ---------- Search bar (filter produk/artikel/pesan sederhana) ----------
+  // ---------- Search bar (filter produk/artikel, debounced) ----------
+  var searchDebounce;
   document.getElementById('topbarSearch').addEventListener('input', function (e) {
     var q = e.target.value.trim().toLowerCase();
-    document.querySelectorAll('#produkTableBody tr').forEach(function (row) {
-      row.style.display = row.textContent.toLowerCase().indexOf(q) === -1 ? 'none' : '';
-    });
-    document.querySelectorAll('#artikelTableBody tr').forEach(function (row) {
-      row.style.display = row.textContent.toLowerCase().indexOf(q) === -1 ? 'none' : '';
-    });
+    clearTimeout(searchDebounce);
+    searchDebounce = setTimeout(function () {
+      produkSearchQuery = q;
+      artikelSearchQuery = q;
+      renderProduk();
+      renderArtikel();
+    }, 180);
   });
 
+  // ---------- Topbar user menu ----------
+  var userMenuBtn = document.getElementById('userMenuBtn');
+  var userMenu = document.getElementById('userMenu');
+  if (userMenuBtn && userMenu) {
+    userMenuBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var willShow = !userMenu.classList.contains('show');
+      userMenu.classList.toggle('show', willShow);
+      userMenuBtn.setAttribute('aria-expanded', String(willShow));
+    });
+    document.addEventListener('click', function (e) {
+      if (!userMenu.contains(e.target) && e.target !== userMenuBtn) {
+        userMenu.classList.remove('show');
+        userMenuBtn.setAttribute('aria-expanded', 'false');
+      }
+    });
+    userMenu.querySelectorAll('[data-section]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        goToSection(btn.getAttribute('data-section'));
+        userMenu.classList.remove('show');
+      });
+    });
+  }
+
+  // ---------- Session info + idle auto-logout (security) ----------
+  // Kalau admin tidak beraktivitas dalam waktu lama di perangkat bersama,
+  // sesi otomatis ditutup untuk mengurangi risiko akses tidak sah.
+  var IDLE_LIMIT_MS = 20 * 60 * 1000; // 20 menit
+  var idleTimer;
+  var sessionPill = document.getElementById('sessionPill');
+  if (sessionPill) {
+    var loginAt = new Date();
+    sessionPill.textContent = 'Masuk pukul ' + loginAt.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+  }
+  function resetIdleTimer() {
+    clearTimeout(idleTimer);
+    idleTimer = setTimeout(async function () {
+      showToast('Sesi berakhir karena tidak ada aktivitas. Silakan masuk kembali.');
+      await supabaseClient.auth.signOut();
+      setTimeout(function () { window.location.href = LOGIN_URL; }, 900);
+    }, IDLE_LIMIT_MS);
+  }
+  ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'].forEach(function (evt) {
+    document.addEventListener(evt, resetIdleTimer, { passive: true });
+  });
+  resetIdleTimer();
+
   // ---------- Init ----------
+  // Tampilkan skeleton loading dulu supaya dashboard terasa responsif
+  // saat menunggu data dari Supabase.
+  function skeletonRows(cols, count) {
+    var cells = '';
+    for (var c = 0; c < cols; c++) cells += '<td><div class="skeleton-bar" style="width:' + (55 + Math.random() * 35) + '%;"></div></td>';
+    var out = '';
+    for (var i = 0; i < count; i++) out += '<tr class="skeleton-row">' + cells + '</tr>';
+    return out;
+  }
+  produkTableBody.innerHTML = skeletonRows(5, 4);
+  artikelTableBody.innerHTML = skeletonRows(4, 4);
+
   // Pertama-tama sinkronkan data awal yang memang sudah ada di frontend.
   // Hanya record yang belum ada yang dimasukkan ke Supabase.
   await bootstrapFromFrontend();
