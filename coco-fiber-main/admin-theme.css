@@ -1,0 +1,211 @@
+/* ==========================================================================
+   CocoFiber. Admin — Shared theme tokens
+   Sinkron dengan design system situs utama:
+   kraft paper + coir terracotta + deep husk brown
+   Display: Fraunces · Body: Inter · Data: JetBrains Mono
+   Dipakai bersama oleh admin-login.html dan dashboard.html
+   ========================================================================== */
+
+:root{
+  --husk-950:#1C1410;
+  --husk-800:#3A2C22;
+  --coir-600:#B5713C;
+  --coir-500:#C6875A;
+  --frond-700:#4A5D45;
+  --kraft-100:#F7F3EC;
+  --kraft-200:#EFE8DA;
+  --card:#FFFFFF;
+  --ink:#241B15;
+  --ink-soft:#6B5D4F;
+  --line:rgba(28,20,16,0.12);
+  --line-strong:rgba(28,20,16,0.2);
+  --danger:#B3452E;
+  --danger-bg:rgba(179,69,46,0.08);
+  --success:#4A5D45;
+  --success-bg:rgba(74,93,69,0.1);
+
+  --radius-sm:8px;
+  --radius:16px;
+  --radius-lg:22px;
+  --shadow-sm:0 2px 8px rgba(28,20,16,0.06);
+  --shadow:0 14px 34px rgba(28,20,16,0.12);
+  --shadow-lg:0 24px 60px rgba(28,20,16,0.22);
+
+  --display:'Fraunces', Georgia, 'Times New Roman', serif;
+  --sans:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --mono:'JetBrains Mono', 'IBM Plex Mono', monospace;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
+html{overflow-x:hidden;width:100%;min-height:100vh;min-height:100dvh;background:var(--kraft-100);}
+
+body{
+  font-family:var(--sans);
+  color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+  line-height:1.5;
+}
+
+a{color:inherit;}
+img{max-width:100%;display:block;}
+button{font-family:inherit;}
+:focus-visible{outline:2.5px solid var(--coir-600);outline-offset:3px;border-radius:4px;}
+
+/* ---------- Shared eyebrow label ---------- */
+.eyebrow{
+  display:inline-flex;align-items:center;gap:0.5rem;
+  font-family:var(--mono);
+  font-size:0.68rem;
+  font-weight:600;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  color:var(--coir-600);
+}
+.eyebrow::before{content:'';width:16px;height:1.5px;background:var(--coir-600);flex-shrink:0;}
+
+/* ---------- Shared brand lockup ---------- */
+.brand{
+  display:flex;
+  align-items:center;
+  gap:0.6rem;
+  text-decoration:none;
+  font-family:var(--display);
+  font-weight:600;
+  font-size:1.3rem;
+  color:var(--husk-950);
+}
+.logo-mark{
+  width:34px;height:34px;border-radius:9px;
+  background:var(--coir-600);
+  color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.02rem;
+  box-shadow:0 6px 16px rgba(181,113,60,0.32);
+  flex-shrink:0;
+}
+
+/* ---------- Shared buttons ---------- */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:0.5rem;
+  padding:0.85rem 1.6rem;
+  border-radius:999px;
+  font-family:var(--sans);
+  font-weight:600;font-size:0.92rem;
+  text-decoration:none;
+  border:1.5px solid transparent;
+  transition:transform 0.28s cubic-bezier(.34,1.56,.64,1), box-shadow 0.28s ease, background 0.28s ease, opacity 0.2s ease, color 0.2s ease;
+  cursor:pointer;
+  white-space:nowrap;
+}
+.btn-primary{background:var(--coir-600);color:#fff;box-shadow:0 6px 16px rgba(181,113,60,0.28);}
+.btn-primary:hover{background:var(--husk-950);transform:translateY(-2px);box-shadow:0 14px 28px rgba(28,20,16,0.3);}
+.btn-primary:active{transform:translateY(0);}
+.btn-primary:disabled{opacity:0.65;cursor:not-allowed;transform:none;box-shadow:none;}
+
+.btn-ghost{
+  background:transparent;color:var(--husk-950);border-color:var(--line-strong);
+}
+.btn-ghost:hover{background:var(--kraft-200);}
+
+.btn-danger{background:var(--danger-bg);color:var(--danger);border-color:rgba(179,69,46,0.25);}
+.btn-danger:hover{background:var(--danger);color:#fff;}
+
+.btn-sm{padding:0.55rem 1.05rem;font-size:0.82rem;}
+.btn-icon{padding:0.6rem;border-radius:10px;}
+.btn-block{width:100%;}
+
+.btn .spinner{
+  width:16px;height:16px;
+  border:2px solid rgba(255,255,255,0.4);
+  border-top-color:#fff;
+  border-radius:50%;
+  display:none;
+  animation:spin 0.7s linear infinite;
+}
+.btn.loading .spinner{display:inline-block;}
+.btn.loading .btn-label{opacity:0.85;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ---------- Shared form fields ---------- */
+.field label{
+  display:block;
+  font-size:0.78rem;
+  font-weight:600;
+  color:var(--husk-800);
+  margin-bottom:0.4rem;
+  letter-spacing:0.01em;
+}
+.input-shell{position:relative;}
+.input-shell input,
+.input-shell select,
+.input-shell textarea,
+.plain-input{
+  width:100%;
+  padding:0.85rem 0.95rem;
+  border:1px solid var(--line);
+  border-radius:10px;
+  font-family:var(--sans);
+  font-size:0.93rem;
+  background:var(--kraft-100);
+  color:var(--ink);
+  transition:border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.input-shell textarea{resize:vertical;}
+.input-shell input::placeholder,
+.input-shell textarea::placeholder{color:rgba(107,93,79,0.55);}
+.input-shell input:focus,
+.input-shell select:focus,
+.input-shell textarea:focus,
+.plain-input:focus{
+  outline:none;
+  border-color:var(--coir-600);
+  box-shadow:0 0 0 3px rgba(181,113,60,0.14);
+}
+.input-shell input.has-icon{padding-right:2.7rem;}
+
+.icon-btn{
+  position:absolute;
+  right:0.6rem;
+  top:50%;
+  transform:translateY(-50%);
+  width:30px;height:30px;
+  border:none;
+  background:transparent;
+  color:var(--ink-soft);
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:7px;
+  transition:background 0.2s ease, color 0.2s ease;
+}
+.icon-btn:hover{background:var(--kraft-200);color:var(--husk-950);}
+.icon-btn svg{width:18px;height:18px;}
+
+/* ---------- Shared alert ---------- */
+.alert{
+  display:none;
+  align-items:flex-start;
+  gap:0.6rem;
+  padding:0.75rem 0.9rem;
+  border-radius:10px;
+  font-size:0.83rem;
+  line-height:1.45;
+}
+.alert.show{display:flex;}
+.alert svg{width:16px;height:16px;flex-shrink:0;margin-top:0.1rem;}
+.alert-danger{background:var(--danger-bg);border:1px solid rgba(179,69,46,0.3);color:var(--danger);}
+.alert-success{background:var(--success-bg);border:1px solid rgba(74,93,69,0.3);color:var(--success);}
+
+/* ---------- Shared badge ---------- */
+.badge{
+  display:inline-flex;align-items:center;gap:0.35rem;
+  font-family:var(--mono);
+  font-size:0.68rem;
+  font-weight:600;
+  letter-spacing:0.03em;
+  padding:0.3rem 0.6rem;
+  border-radius:999px;
+}
+.badge-new{background:var(--success-bg);color:var(--success);}
+.badge-pending{background:rgba(181,113,60,0.12);color:var(--coir-600);}
+.badge-archived{background:var(--kraft-200);color:var(--ink-soft);}

@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Dashboard Admin — CocoFiber.</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="admin-theme.css">
+<link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+
+<div class="app">
+
+  <button class="sidebar-toggle" id="sidebarToggle" aria-label="Buka menu">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <a href="#overview" class="brand"><span class="logo-mark">C</span>CocoFiber.</a>
+
+    <p class="nav-group-label">Menu</p>
+    <button class="nav-link active" data-section="overview">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+      Ringkasan
+    </button>
+    <button class="nav-link" data-section="produk">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7L12 3 4 7v10l8 4 8-4V7z"/><path d="M4 7l8 4 8-4M12 11v10"/></svg>
+      Produk
+      <span class="nav-count" data-count="produk">0</span>
+    </button>
+    <button class="nav-link" data-section="artikel">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+      Artikel
+      <span class="nav-count" data-count="artikel">0</span>
+    </button>
+    <button class="nav-link" data-section="konten">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 7h8M8 11h8M8 15h5"/></svg>
+      Konten Situs
+      <span class="nav-count" data-count="konten">0</span>
+    </button>
+    <button class="nav-link" data-section="pesan">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v14H7l-3 3V4z"/></svg>
+      Pesan Masuk
+      <span class="nav-count" data-count="pesan">0</span>
+    </button>
+
+    <p class="nav-group-label">Akun</p>
+    <button class="nav-link" data-section="pengaturan">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.65 1.65 0 004.6 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 9c.11.36.31.68.6.92"/></svg>
+      Pengaturan
+    </button>
+    <button class="nav-link" data-action="logout">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Keluar
+    </button>
+
+    <div class="sidebar-footer">
+      <div class="admin-chip">
+        <div class="admin-avatar">A</div>
+        <div>
+          <strong id="sidebarAdminName">Admin CocoFiber</strong>
+          <small id="sidebarAdminEmail">admin@cocofiber.id</small>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="main">
+    <header class="topbar">
+      <div class="topbar-title">
+        <h2 id="topbarTitle">Ringkasan</h2>
+        <p id="topbarSub">Ringkasan aktivitas dan performa situs CocoFiber.</p>
+      </div>
+      <div class="topbar-search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="topbarSearch" placeholder="Cari produk atau artikel...">
+      </div>
+      <div class="topbar-right">
+        <div class="topbar-user">
+          <button class="topbar-user-btn" id="userMenuBtn" aria-haspopup="true" aria-expanded="false">
+            <div class="admin-avatar">A</div>
+            <span class="topbar-user-name" id="topbarUserName">Admin CocoFiber</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="topbar-user-menu" id="userMenu">
+            <div class="session-pill" id="sessionPill">Sesi aktif</div>
+            <button data-section="pengaturan" class="menu-nav">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.65 1.65 0 004.6 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 9c.11.36.31.68.6.92"/></svg>
+              Pengaturan
+            </button>
+            <div class="menu-divider"></div>
+            <button data-action="logout" class="menu-danger">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+              Keluar
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="content">
+
+      <!-- Overview -->
+      <section class="section active" id="section-overview">
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-card-head">
+              <span class="eyebrow">Produk</span>
+              <span class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7L12 3 4 7v10l8 4 8-4V7z"/><path d="M4 7l8 4 8-4M12 11v10"/></svg></span>
+            </div>
+            <div class="stat-value" id="statProduk">0</div>
+            <div class="stat-delta">Total produk terdaftar</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-head">
+              <span class="eyebrow">Artikel</span>
+              <span class="stat-icon tone-dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg></span>
+            </div>
+            <div class="stat-value" id="statArtikel">0</div>
+            <div class="stat-delta">Total artikel diterbitkan</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-head">
+              <span class="eyebrow">Pesan Baru</span>
+              <span class="stat-icon tone-danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v14H7l-3 3V4z"/></svg></span>
+            </div>
+            <div class="stat-value" id="statPesanBaru">0</div>
+            <div class="stat-delta up">Perlu ditindaklanjuti</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-head">
+              <span class="eyebrow">Konten Tayang</span>
+              <span class="stat-icon tone-green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></span>
+            </div>
+            <div class="stat-value" id="statPublished">0</div>
+            <div class="stat-delta">Produk + artikel published</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <div>
+              <h3>Aktivitas Terbaru</h3>
+              <p>Pesan dan pembaruan konten terakhir</p>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="activity-list" id="activityList"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Produk -->
+      <section class="section" id="section-produk">
+        <div class="panel">
+          <div class="panel-head">
+            <div>
+              <h3>Daftar Produk</h3>
+              <p>Produk yang tampil di halaman Produk situs</p>
+            </div>
+            <div class="panel-actions">
+              <button class="btn btn-ghost btn-sm" id="templateProdukBtn">Gunakan Template</button>
+              <button class="btn btn-primary btn-sm" id="addProdukBtn">+ Tambah Produk</button>
+            </div>
+          </div>
+          <div class="filter-bar">
+            <div class="chip-group" id="produkFilterChips">
+              <button class="chip active" data-status-filter="all">Semua <span class="chip-count" id="countProdukAll">0</span></button>
+              <button class="chip" data-status-filter="published">Tayang <span class="chip-count" id="countProdukPublished">0</span></button>
+              <button class="chip" data-status-filter="draft">Draft <span class="chip-count" id="countProdukDraft">0</span></button>
+            </div>
+            <select class="plain-input sort-select" id="produkSort">
+              <option value="urutan">Urutkan: Manual</option>
+              <option value="nama">Nama A–Z</option>
+              <option value="terbaru">Terbaru</option>
+            </select>
+          </div>
+          <div class="panel-body no-pad">
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead>
+                  <tr><th>Produk</th><th>Harga</th><th>Stok / Supply</th><th>Status</th><th></th></tr>
+                </thead>
+                <tbody id="produkTableBody"></tbody>
+              </table>
+            </div>
+            <div class="table-footer"><span id="produkTableCount"></span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Artikel -->
+      <section class="section" id="section-artikel">
+        <div class="panel">
+          <div class="panel-head">
+            <div>
+              <h3>Daftar Artikel</h3>
+              <p>Artikel yang tampil di halaman Artikel situs</p>
+            </div>
+            <div class="panel-actions">
+              <button class="btn btn-ghost btn-sm" id="templateArtikelBtn">Gunakan Template</button>
+              <button class="btn btn-primary btn-sm" id="addArtikelBtn">+ Tulis Artikel</button>
+            </div>
+          </div>
+          <div class="filter-bar">
+            <div class="chip-group" id="artikelFilterChips">
+              <button class="chip active" data-status-filter="all">Semua <span class="chip-count" id="countArtikelAll">0</span></button>
+              <button class="chip" data-status-filter="published">Tayang <span class="chip-count" id="countArtikelPublished">0</span></button>
+              <button class="chip" data-status-filter="draft">Draft <span class="chip-count" id="countArtikelDraft">0</span></button>
+            </div>
+          </div>
+          <div class="panel-body no-pad">
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead>
+                  <tr><th>Judul</th><th>Status</th><th>Tanggal</th><th></th></tr>
+                </thead>
+                <tbody id="artikelTableBody"></tbody>
+              </table>
+            </div>
+            <div class="table-footer"><span id="artikelTableCount"></span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Konten Situs -->
+      <section class="section" id="section-konten">
+        <div class="panel">
+          <div class="panel-head">
+            <div>
+              <h3>Konten Frontend</h3>
+              <p>Semua teks frontend yang sudah terhubung ke dashboard. Edit langsung tanpa JSON atau kode.</p>
+            </div>
+            <div class="panel-actions">
+              <select id="cmsPageFilter" class="plain-input cms-page-filter">
+                <option value="all">Semua halaman</option>
+                <option value="index.html">Beranda</option>
+                <option value="produk.html">Produk</option>
+                <option value="semua-artikel.html">Artikel</option>
+                <option value="tentang.html">Tentang</option>
+                <option value="kontak.html">Kontak</option>
+                <option value="artikel.html">Detail Artikel</option>
+              </select>
+              <button class="btn btn-primary btn-sm" id="addKontenBtn">+ Tambah Konten</button>
+            </div>
+          </div>
+          <div class="cms-toolbar">
+            <input type="search" id="cmsSearch" class="plain-input" placeholder="Cari teks atau bagian halaman...">
+            <span class="cms-hint">Klik Ubah untuk mengedit. Perubahan tampil setelah disimpan.</span>
+          </div>
+          <div class="panel-body no-pad">
+            <div class="cms-list" id="cmsList"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Pesan -->
+      <section class="section" id="section-pesan">
+        <div class="panel">
+          <div class="panel-head">
+            <div>
+              <h3>Pesan Masuk</h3>
+              <p>Kiriman dari formulir kontak situs</p>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="activity-list" id="pesanList"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Pengaturan -->
+      <section class="section" id="section-pengaturan">
+        <div class="panel">
+          <div class="panel-head">
+            <div>
+              <h3>Profil Admin</h3>
+              <p>Perbarui nama, email, dan kata sandi akun ini</p>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="alert alert-danger" id="settingsAlert">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <span id="settingsAlertText"></span>
+            </div>
+            <form id="settingsForm" style="display:flex;flex-direction:column;gap:1.3rem;max-width:460px;">
+              <div class="field">
+                <label for="settingsName">Nama</label>
+                <div class="input-shell"><input type="text" id="settingsName" class="plain-input" placeholder="Nama admin" autocomplete="name"></div>
+              </div>
+              <div class="field">
+                <label for="settingsEmail">Email</label>
+                <div class="input-shell"><input type="email" id="settingsEmail" class="plain-input" autocomplete="email"></div>
+                <p class="field-hint">Mengubah email akan mengirim tautan konfirmasi ke alamat baru. Email lama tetap aktif sampai konfirmasi selesai.</p>
+              </div>
+
+              <div class="settings-divider">
+                <span>Ubah Password (opsional)</span>
+              </div>
+
+              <div class="field">
+                <label for="settingsCurrentPass">Password Saat Ini</label>
+                <div class="input-shell"><input type="password" id="settingsCurrentPass" class="plain-input" placeholder="Wajib diisi untuk mengubah email/password" autocomplete="current-password"></div>
+              </div>
+              <div class="field-row">
+                <div class="field">
+                  <label for="settingsNewPass">Password Baru</label>
+                  <div class="input-shell"><input type="password" id="settingsNewPass" class="plain-input" placeholder="Min. 8 karakter" autocomplete="new-password"></div>
+                </div>
+                <div class="field">
+                  <label for="settingsConfirmPass">Konfirmasi Password</label>
+                  <div class="input-shell"><input type="password" id="settingsConfirmPass" class="plain-input" placeholder="••••••••" autocomplete="new-password"></div>
+                </div>
+              </div>
+              <div>
+                <button type="submit" class="btn btn-primary" id="settingsSubmitBtn">
+                  <span class="spinner"></span>
+                  <span class="btn-label">Simpan Perubahan</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- Modal: Produk -->
+<div class="modal-backdrop" id="produkModal">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <h3 id="produkModalTitle">Tambah Produk</h3>
+        <p>Data ini tampil di halaman Produk situs utama.</p>
+      </div>
+      <button class="modal-close" id="produkModalClose" aria-label="Tutup">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <form id="produkForm">
+      <input type="hidden" id="produkId">
+      <div class="field">
+        <label for="produkNama">Nama Produk</label>
+        <div class="input-shell"><input type="text" id="produkNama" class="plain-input" placeholder="Cth. Coco Fiber" required></div>
+      </div>
+      <div class="field">
+        <label for="produkKategori">Kategori</label>
+        <div class="input-shell"><input type="text" id="produkKategori" class="plain-input" placeholder="Cth. Serat Sabut Kelapa" required></div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="produkHarga">Harga</label>
+          <div class="input-shell"><input type="text" id="produkHarga" class="plain-input" placeholder="Cth. $260–300 / MT"></div>
+        </div>
+        <div class="field">
+          <label for="produkStok">Stok / Supply</label>
+          <div class="input-shell"><input type="text" id="produkStok" class="plain-input" placeholder="Cth. 300 Ton / Bulan"></div>
+        </div>
+      </div>
+      <div class="field">
+        <label for="produkDeskripsi">Deskripsi</label>
+        <div class="input-shell"><textarea id="produkDeskripsi" class="plain-input" rows="4" placeholder="Deskripsi produk yang tampil di frontend"></textarea></div>
+      </div>
+      <div class="field">
+        <label for="produkDeskripsiEn">Deskripsi (English)</label>
+        <div class="input-shell"><textarea id="produkDeskripsiEn" class="plain-input" rows="4" placeholder="English description"></textarea></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label for="produkPackaging">Kemasan & Pengiriman</label><div class="input-shell"><input type="text" id="produkPackaging" class="plain-input"></div></div>
+        <div class="field"><label for="produkPayment">Pembayaran</label><div class="input-shell"><input type="text" id="produkPayment" class="plain-input"></div></div>
+      </div>
+      <div class="field">
+        <label>Gambar Produk</label>
+        <div class="image-upload-box" id="produkImageBox">
+          <input type="file" id="produkImageFile" accept="image/*" hidden>
+          <div class="image-upload-preview" id="produkImagePreview">
+            <img id="produkImagePreviewImg" alt="" hidden>
+            <span class="image-upload-empty" id="produkImageEmptyState">Belum ada gambar</span>
+          </div>
+          <div class="image-upload-actions">
+            <button type="button" class="btn btn-ghost btn-sm" id="produkImagePickBtn">Pilih Gambar</button>
+            <button type="button" class="btn btn-ghost btn-sm btn-danger-text" id="produkImageRemoveBtn" hidden>Hapus</button>
+            <span class="image-upload-status" id="produkImageStatus"></span>
+          </div>
+          <p class="field-hint">Seret &amp; lepas gambar, atau klik &ldquo;Pilih Gambar&rdquo;. JPG/PNG/WebP, maks 5MB.</p>
+          <details class="image-url-fallback">
+            <summary>Atau isi URL gambar manual</summary>
+            <div class="input-shell"><input type="text" id="produkGambar" class="plain-input" placeholder="images/nama-file.webp atau URL"></div>
+          </details>
+        </div>
+      </div>
+      <div class="field repeater-field">
+        <div class="field-heading"><label>Fitur Produk</label><button type="button" class="btn btn-ghost btn-xs" data-add-row="fitur">+ Tambah</button></div>
+        <div id="produkFiturRows" class="repeater-list"></div>
+      </div>
+      <div class="field repeater-field">
+        <div class="field-heading"><label>Quick Specs</label><button type="button" class="btn btn-ghost btn-xs" data-add-row="quickspecs">+ Tambah</button></div>
+        <div id="produkQuickspecsRows" class="repeater-list"></div>
+      </div>
+      <div class="field repeater-field">
+        <div class="field-heading"><label>Lead Time</label><button type="button" class="btn btn-ghost btn-xs" data-add-row="lead">+ Tambah</button></div>
+        <div id="produkLeadRows" class="repeater-list"></div>
+      </div>
+      <div class="field repeater-field">
+        <div class="field-heading"><label>Spesifikasi</label><button type="button" class="btn btn-ghost btn-xs" data-add-row="spesifikasi">+ Tambah</button></div>
+        <div id="produkSpesifikasiRows" class="repeater-list"></div>
+      </div>
+      <div class="field"><label for="produkUrutan">Urutan Tampil</label><div class="input-shell"><input type="number" id="produkUrutan" class="plain-input" min="0" value="0"></div></div>
+      <div class="field">
+        <label for="produkStatus">Status</label>
+        <div class="input-shell">
+          <select id="produkStatus" class="plain-input">
+            <option value="published">Tayang</option>
+            <option value="draft">Draft</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" id="produkModalCancel">Batal</button>
+        <button type="submit" class="btn btn-primary">Simpan Produk</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal: Artikel -->
+<div class="modal-backdrop" id="artikelModal">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <h3 id="artikelModalTitle">Tulis Artikel</h3>
+        <p>Data ini tampil di halaman Artikel situs utama.</p>
+      </div>
+      <button class="modal-close" id="artikelModalClose" aria-label="Tutup">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <form id="artikelForm">
+      <input type="hidden" id="artikelId">
+      <div class="field">
+        <label for="artikelJudul">Judul Artikel</label>
+        <div class="input-shell"><input type="text" id="artikelJudul" class="plain-input" placeholder="Judul artikel" required></div>
+      </div>
+      <div class="field">
+        <label for="artikelJudulEn">Judul (English)</label>
+        <div class="input-shell"><input type="text" id="artikelJudulEn" class="plain-input" placeholder="English article title"></div>
+      </div>
+      <div class="field">
+        <label for="artikelRingkasan">Ringkasan / Excerpt</label>
+        <div class="input-shell"><textarea id="artikelRingkasan" class="plain-input" rows="3" placeholder="Ringkasan yang tampil di kartu artikel"></textarea></div>
+      </div>
+      <div class="field">
+        <label for="artikelRingkasanEn">Ringkasan (English)</label>
+        <div class="input-shell"><textarea id="artikelRingkasanEn" class="plain-input" rows="3" placeholder="English excerpt"></textarea></div>
+      </div>
+      <div class="field">
+        <label for="artikelKategori">Kategori</label>
+        <div class="input-shell"><input type="text" id="artikelKategori" class="plain-input" placeholder="Cth. Ekspor, Industri, Produksi"></div>
+      </div>
+      <div class="field">
+        <label>Gambar Artikel</label>
+        <div class="image-upload-box" id="artikelImageBox">
+          <input type="file" id="artikelImageFile" accept="image/*" hidden>
+          <div class="image-upload-preview" id="artikelImagePreview">
+            <img id="artikelImagePreviewImg" alt="" hidden>
+            <span class="image-upload-empty" id="artikelImageEmptyState">Belum ada gambar</span>
+          </div>
+          <div class="image-upload-actions">
+            <button type="button" class="btn btn-ghost btn-sm" id="artikelImagePickBtn">Pilih Gambar</button>
+            <button type="button" class="btn btn-ghost btn-sm btn-danger-text" id="artikelImageRemoveBtn" hidden>Hapus</button>
+            <span class="image-upload-status" id="artikelImageStatus"></span>
+          </div>
+          <p class="field-hint">Seret &amp; lepas gambar, atau klik &ldquo;Pilih Gambar&rdquo;. JPG/PNG/WebP, maks 5MB.</p>
+          <details class="image-url-fallback">
+            <summary>Atau isi URL gambar manual</summary>
+            <div class="input-shell"><input type="text" id="artikelGambar" class="plain-input" placeholder="images/nama-file.webp atau URL"></div>
+          </details>
+        </div>
+      </div>
+      <div class="field">
+        <label for="artikelPenulis">Penulis</label>
+        <div class="input-shell"><input type="text" id="artikelPenulis" class="plain-input"></div>
+      </div>
+      <div class="field">
+        <label>Isi Artikel</label><div class="rich-toolbar"><button type="button" data-cmd="bold">B</button><button type="button" data-cmd="italic"><i>I</i></button><button type="button" data-cmd="formatBlock" data-value="h2">H2</button><button type="button" data-cmd="insertUnorderedList">• List</button></div><div class="input-shell"><div id="artikelKonten" class="plain-input rich-editor" contenteditable="true" data-placeholder="Tulis isi artikel di sini..."></div></div>
+      </div>
+      <div class="field">
+        <label>Isi Artikel (English)</label><div class="rich-toolbar"><button type="button" data-cmd="bold">B</button><button type="button" data-cmd="italic"><i>I</i></button><button type="button" data-cmd="formatBlock" data-value="h2">H2</button><button type="button" data-cmd="insertUnorderedList">• List</button></div><div class="input-shell"><div id="artikelKontenEn" class="plain-input rich-editor" contenteditable="true" data-placeholder="Write the English article here..."></div></div>
+      </div>
+      <div class="field">
+        <label>FAQ (Pertanyaan yang Sering Diajukan)</label>
+        <div id="artikelFaqList" class="faq-editor-list"></div>
+        <button type="button" class="btn btn-ghost btn-sm" id="artikelFaqAdd">+ Tambah FAQ</button>
+      </div>
+      <div class="field">
+        <label for="artikelStatus">Status</label>
+        <div class="input-shell">
+          <select id="artikelStatus" class="plain-input">
+            <option value="published">Tayang</option>
+            <option value="draft">Draft</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" id="artikelModalCancel">Batal</button>
+        <button type="submit" class="btn btn-primary">Simpan Artikel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+  <span id="toastText">Berhasil disimpan.</span>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script src="bootstrap-data.js"></script>
+<script src="dashboard.js"></script>
+</body>
+</html>
