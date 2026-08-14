@@ -66,9 +66,9 @@
   function articleCard(a) {
     var title = pick(a.judul, a.judul_en);
     var summary = pick(a.ringkasan, a.ringkasan_en);
-    var img = a.gambar_url || 'images/gallery-coco-fiber.webp';
+    var imgHtml = a.gambar_url ? '<img src="' + esc(a.gambar_url) + '" alt="' + esc(title) + '" loading="lazy">' : '';
     return '<article class="art-card"><a class="art-thumb" href="artikel.html?slug=' + encodeURIComponent(a.slug) + '">' +
-      '<img src="' + esc(img) + '" alt="' + esc(title) + '" loading="lazy"></a>' +
+      imgHtml + '</a>' +
       '<p class="art-tag">' + esc(a.kategori || (lang()==='en'?'Article':'Artikel')) + '</p>' +
       '<h3>' + esc(title) + '</h3>' +
       (summary ? '<p class="art-teaser">' + esc(summary) + '</p>' : '') +
